@@ -33,7 +33,9 @@
     max: new Date( FromTo['T'] ),             // upper limit of visible range
     zoomMin: 1000 * 60 * 60 * 24,             // one day in milliseconds
     zoomMax: 1000 * 60 * 60 * 24 * 31 * 3,    // about three months in milliseconds
-    tooltip: { followMouse: true }
+    tooltip: { followMouse: true },
+    selectable: true,
+    multiselect: true,
   };
 
   // create the timeline
@@ -41,8 +43,15 @@
   timeline.setOptions(options);
   timeline.setItems(items);
 
-  timeline.on('click', function (properties) {
-    rundeninfo.innerHTML = "item: " + stringifyObject(properties.item);
+  // event handlers
+  timeline.on('select', function (properties) {
+    rundeninfo.innerHTML = "items: " + stringifyObject(properties.items);
+  });
+  timeline.on('doubleClick', function (properties) {
+  });
+  timeline.on('contextmenu', function (properties) {
+  });
+  timeline.on('rangechanged', function (properties) {
   });
 
 function stringifyObject (object) {
