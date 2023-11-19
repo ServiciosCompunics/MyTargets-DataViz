@@ -3,11 +3,14 @@
     <link  href="./dist/vis-timeline-graph2d.min.css" rel="stylesheet" type="text/css" />
     <script src='./dist/sql-wasm.js'></script>
     <script src="./dist/vis.min.js"></script>
+    <script src="./dist/jquery.min.js"> </script>
+    <script src="./dist/Chart.js"> </script>
     <script type="module" src="./dataviz.js"></script>
   </head>
   <body>
-    <div id="timeline"></div>
-    <div id="rundeninfo"></div>
+    <div id="timeline" style="width:100%;height:"10%"></div>
+    <canvas id="trainingInfo" style="width:100%;height:50%"></canvas>
+    <div id="rundenInfo"></div>
     <style type="text/css">
     .vis-item {
      background-color: #ffffff;

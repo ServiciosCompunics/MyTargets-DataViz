@@ -6,25 +6,27 @@
   const [SQL, buf] = await Promise.all([sqlPromise, dataPromise])
   const db = new SQL.Database(new Uint8Array(buf));
 
-  // Grab the rundeninfo element
-  const rundeninfo = document.getElementById( "rundeninfo" );
-  rundeninfo.innerHTML = '';
+  // Grab the rundenInfo element
+  const rundenInfo = document.getElementById( "rundenInfo" );
+  const trainingInfo = document.getElementById( "trainingInfo" );
+  rundenInfo.innerHTML = '';
+  trainingInfo.innerHTML = '';
 
   // Get dates of first and last Training - whole months
   var stmt = db.prepare("SELECT min(date(date, 'start of month')) AS F, max(date(date, 'start of month','+1 month')) AS T FROM Training");
   stmt.getAsObject({});
   var FromTo = stmt.getAsObject();
 
-  var stmt = db.prepare("SELECT id AS TID, date AS D, location AS L, reachedPoints AS RP, totalPoints AS TP, round(((reachedPoints*1.0)/(totalPoints*1.0)*100)) AS PC FROM Training");
-  var T = [];
+  var stmt = db.prepare("SELECT id AS TID, date AS D, location AS L, reachedPoints AS RP, totalPoints AS TP, round(((reachedPoints*1.0)/(totalPoints*1.0)*100)) AS PC FROM Training ORDER BY date ASC");
+  var TLdata = [];
   while(stmt.step()) {
     var Trainings = stmt.getAsObject();
-    T.push({
+    TLdata.push({
       'id': Trainings['TID'], 'start': new Date( Trainings['D'] ), 'content': Trainings['L'], 'title': Trainings['RP']+"/"+Trainings['TP']+"/"+Trainings['PC']+"%",
     });
   }
 
-  var items = new vis.DataSet( T );
+  var items = new vis.DataSet( TLdata );
   // create timeline
   var container = document.getElementById('timeline');
   var options = {
@@ -44,25 +46,52 @@
   timeline.setItems(items);
 
   // event handlers
-  timeline.on('select', function (properties) {
-    rundeninfo.innerHTML = "items: " + stringifyObject(properties.items);
+  timeline.on('select', function(properties) {
+    showTimelineGraph(properties);
   });
-  timeline.on('doubleClick', function (properties) {
+  timeline.on('doubleClick', function(properties) {
+    console.log("event: doubelClick");
   });
-  timeline.on('contextmenu', function (properties) {
+  timeline.on('contextmenu', function(properties) {
+    console.log("event: contextmenue");
   });
-  timeline.on('rangechanged', function (properties) {
+  timeline.on('rangechanged', function(properties) {
+    console.log("event: rangechanged");
   });
 
-function stringifyObject (object) {
-  if (!object) return;
-  var replacer = function(key, value) {
-    if (value && value.tagName) {
-      return "DOM Element";
-    } else {
-      return value;
+  function showTimelineGraph (properties) {
+    var stmt = db.prepare("SELECT id, date AS D, reachedPoints AS RP, totalPoints AS TP, round(((reachedPoints*1.0)/(totalPoints*1.0)*100)) AS PC FROM Training WHERE id IN (" + properties.items + ") ORDER BY date ASC");
+    var TLdata = [];
+    while(stmt.step()) {
+      var Trainings = stmt.getAsObject();
+      TLdata.push({
+        date: Trainings['D'],  percent: Trainings['PC'], tooltip: Trainings['RP']+"/"+Trainings['TP']+"/"+Trainings['PC']+"%",
+      });
     }
+    //rundenInfo.innerHTML = "training: " + stringifyObject(TLdata);
+    new Chart("trainingInfo", {
+      type: "bar",
+      data: {
+        labels: TLdata.map( row => row.date ),
+        datasets: [{
+          data: TLdata.map( row => row.percent ),
+        }]
+      },
+      options: {
+        legend: {display: false},
+        events: ['click'],
+      }
+    });
   }
-  return JSON.stringify(object, replacer)
-}
 
+  function stringifyObject (object) {
+    if (!object) return;
+    var replacer = function(key, value) {
+      if (value && value.tagName) {
+        return "DOM Element";
+      } else {
+        return value;
+      }
+    }
+    return JSON.stringify(object, replacer)
+  }
