@@ -19,11 +19,13 @@
 
   var stmt = db.prepare("SELECT id AS TID, date AS D, location AS L, reachedPoints AS RP, totalPoints AS TP, round(((reachedPoints*1.0)/(totalPoints*1.0)*100)) AS PC FROM Training ORDER BY date ASC");
   var TLdata = [];
+  var TLids  = [];
   while(stmt.step()) {
     var Trainings = stmt.getAsObject();
     TLdata.push({
       'id': Trainings['TID'], 'start': new Date( Trainings['D'] ), 'content': Trainings['L'], 'title': Trainings['RP']+"/"+Trainings['TP']+"/"+Trainings['PC']+"%",
     });
+    TLids.push( Trainings['TID'],);
   }
 
   var items = new vis.DataSet( TLdata );
@@ -45,6 +47,7 @@
   timeline.setOptions(options);
   timeline.setItems(items);
 
+  //showTimelineGraph({"items": [ TLids ]});
   // event handlers
   timeline.on('select', function(properties) {
     showTimelineGraph(properties);
@@ -56,7 +59,9 @@
     console.log("event: contextmenue");
   });
   timeline.on('rangechanged', function(properties) {
-    console.log("event: rangechanged");
+    var a = timeline.getVisibleItems();
+    timeline.setSelection('');
+    showTimelineGraph( {"items": [ a ]});
   });
 
   function showTimelineGraph (properties) {
@@ -68,7 +73,6 @@
         date: Trainings['D'],  percent: Trainings['PC'], tooltip: Trainings['RP']+"/"+Trainings['TP']+"/"+Trainings['PC']+"%",
       });
     }
-    //rundenInfo.innerHTML = "training: " + stringifyObject(TLdata);
     new Chart("trainingInfo", {
       type: "bar",
       data: {
@@ -80,6 +84,14 @@
       options: {
         legend: {display: false},
         events: ['click'],
+        scales: {
+          yAxes: [{
+            ticks: {
+              min: 0,
+              max: 100,
+            }
+          }]
+        }
       }
     });
   }
