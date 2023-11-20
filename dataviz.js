@@ -6,35 +6,35 @@
   const [SQL, buf] = await Promise.all([sqlPromise, dataPromise])
   const db = new SQL.Database(new Uint8Array(buf));
 
-  // Grab the rundenInfo element
+  // Grab the HTML positioning elements
   const rundenInfo = document.getElementById( "rundenInfo" );
   const trainingInfo = document.getElementById( "trainingInfo" );
   rundenInfo.innerHTML = '';
   trainingInfo.innerHTML = '';
 
   // Get dates of first and last Training - whole months
-  var stmt = db.prepare("SELECT min(date(date, 'start of month')) AS F, max(date(date, 'start of month','+1 month')) AS T FROM Training");
+  var stmt = db.prepare("SELECT min(date(date, 'start of month')) AS Start, max(date(date, 'start of month','+1 month')) AS End FROM Training");
   stmt.getAsObject({});
-  var FromTo = stmt.getAsObject();
+  var TLRange = stmt.getAsObject();
 
   var stmt = db.prepare("SELECT id AS TID, date AS D, location AS L, reachedPoints AS RP, totalPoints AS TP, round(((reachedPoints*1.0)/(totalPoints*1.0)*100)) AS PC FROM Training ORDER BY date ASC");
-  var TLdata = [];
-  var TLids  = [];
+  var TLevents   = [];
+  var TLeventids = [];
   while(stmt.step()) {
     var Trainings = stmt.getAsObject();
-    TLdata.push({
+    TLevents.push({
       'id': Trainings['TID'], 'start': new Date( Trainings['D'] ), 'content': Trainings['L'], 'title': Trainings['RP']+"/"+Trainings['TP']+"/"+Trainings['PC']+"%",
     });
-    TLids.push( Trainings['TID'],);
+    TLeventids.push( Trainings['TID'],);
   }
 
-  var items = new vis.DataSet( TLdata );
-  // create timeline
+  var items = new vis.DataSet( TLevents );
+  // create timeline config
   var container = document.getElementById('timeline');
   var options = {
     height: '300px',
-    min: new Date( FromTo['F'] ),             // lower limit of visible range
-    max: new Date( FromTo['T'] ),             // upper limit of visible range
+    min: new Date( TLRange['Start'] ),        // lower limit of visible range
+    max: new Date( TLRange['End'] ),          // upper limit of visible range
     zoomMin: 1000 * 60 * 60 * 24,             // one day in milliseconds
     zoomMax: 1000 * 60 * 60 * 24 * 31 * 3,    // about three months in milliseconds
     tooltip: { followMouse: true },
@@ -47,6 +47,7 @@
   timeline.setOptions(options);
   timeline.setItems(items);
 
+  // helpers
   function move (percentage) {
     var range = timeline.getWindow();
     var interval = range.end - range.start;
@@ -62,7 +63,7 @@
   document.getElementById('moveLeft').onclick  = function () { move( 0.2); };
   document.getElementById('moveRight').onclick = function () { move(-0.2); };
 
-  // event handlers
+  // timeline event handlers
   timeline.on('select', function(properties) {
     showTimelineGraph(properties);
   });
@@ -110,6 +111,7 @@
     });
   }
 
+  // needed for debugging
   function stringifyObject (object) {
     if (!object) return;
     var replacer = function(key, value) {
