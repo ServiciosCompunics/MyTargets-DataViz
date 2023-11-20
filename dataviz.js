@@ -47,7 +47,21 @@
   timeline.setOptions(options);
   timeline.setItems(items);
 
-  //showTimelineGraph({"items": [ TLids ]});
+  function move (percentage) {
+    var range = timeline.getWindow();
+    var interval = range.end - range.start;
+    timeline.setWindow({
+      start: range.start.valueOf() - interval * percentage,
+      end:   range.end.valueOf()   - interval * percentage
+    });
+  };
+
+  // attach events to the navigation buttons
+  document.getElementById('zoomIn').onclick    = function () { timeline.zoomIn( 0.2); };
+  document.getElementById('zoomOut').onclick   = function () { timeline.zoomOut( 0.2); };
+  document.getElementById('moveLeft').onclick  = function () { move( 0.2); };
+  document.getElementById('moveRight').onclick = function () { move(-0.2); };
+
   // event handlers
   timeline.on('select', function(properties) {
     showTimelineGraph(properties);

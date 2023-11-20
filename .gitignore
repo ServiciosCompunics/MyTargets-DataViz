@@ -3,3 +3,4 @@
 *.swp
 .bundle
 *.bak
+data.db
