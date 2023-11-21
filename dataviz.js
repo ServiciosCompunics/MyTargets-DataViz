@@ -1,4 +1,4 @@
-  // Load sqj.js module and database
+  // Load sqj.js modue and database
   const sqlPromise = initSqlJs({
     locateFile: file => `./dist/${file}`
   });
@@ -9,7 +9,7 @@
   // Grab the HTML positioning elements
   const rundenInfo = document.getElementById( "rundenInfo" );
   const trainingInfo = document.getElementById( "trainingInfo" );
-  rundenInfo.innerHTML = '';
+  //rundenInfo.innerHTML = 'CHK';
   trainingInfo.innerHTML = '';
 
   // Get dates of first and last Training - whole months
@@ -32,7 +32,8 @@
   // create timeline config
   var container = document.getElementById('timeline');
   var options = {
-    height: '300px',
+    //height: '200px',
+    height: '20vH',
     min: new Date( TLRange['Start'] ),        // lower limit of visible range
     max: new Date( TLRange['End'] ),          // upper limit of visible range
     zoomMin: 1000 * 60 * 60 * 24,             // one day in milliseconds
@@ -71,13 +72,49 @@
     console.log("event: doubelClick");
   });
   timeline.on('contextmenu', function(properties) {
-    console.log("event: contextmenue");
+    //var a = timeline.getVisibleItems();
+    timeline.setSelection('');
+    showRundenInfo( properties);
+    event.preventDefault();
   });
   timeline.on('rangechanged', function(properties) {
     var a = timeline.getVisibleItems();
     timeline.setSelection('');
     showTimelineGraph( {"items": [ a ]});
   });
+
+  function showRundenInfo (properties) {
+    var stmt = db.prepare("SELECT id, distance AS DIST, reachedPoints AS RP, totalPoints AS TP, round(((reachedPoints*1.0)/(totalPoints*1.0)*100)) AS PC FROM Round WHERE trainingId IN (" + properties.item + ") ORDER BY id ASC");
+    var RDdata = [];
+    while(stmt.step()) {
+      var Runden = stmt.getAsObject();
+      RDdata.push({
+        id: Runden['id'], dist: Runden['DIST'], percent: Runden['PC'], tooltip: Runden['RP']+"/"+Runden['TP']+"/"+Runden['PC']+"%",
+      });
+    }
+    new Chart("rundenInfo", {
+      //type: "bar",
+      type: "line",
+      data: {
+        labels: RDdata.map( row => row.dist ),
+        datasets: [{
+          data: RDdata.map( row => row.percent ),
+        }]
+      },
+      options: {
+        legend: {display: false},
+        events: ['click'],
+        scales: {
+          yAxes: [{
+            ticks: {
+              min: 0,
+              max: 100,
+            }
+          }]
+        }
+      }
+    });
+  }
 
   function showTimelineGraph (properties) {
     var stmt = db.prepare("SELECT id, date AS D, reachedPoints AS RP, totalPoints AS TP, round(((reachedPoints*1.0)/(totalPoints*1.0)*100)) AS PC FROM Training WHERE id IN (" + properties.items + ") ORDER BY date ASC");
