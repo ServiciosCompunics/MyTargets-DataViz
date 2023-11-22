@@ -1,6 +1,5 @@
-*.tmp
-*.gem
+doc/
+tmp/
 *.swp
-.bundle
 *.bak
 data.db
