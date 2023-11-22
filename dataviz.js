@@ -7,10 +7,8 @@
   const db = new SQL.Database(new Uint8Array(buf));
 
   // Grab the HTML positioning elements
-  const rundenInfo = document.getElementById( "rundenInfo" );
-  const trainingInfo = document.getElementById( "trainingInfo" );
-  //rundenInfo.innerHTML = 'CHK';
-  trainingInfo.innerHTML = '';
+  const trainingGraph = document.getElementById( "trainingGraph" );
+  const rundenGraph  = document.getElementById( "rundenGraph" );
 
   // Get dates of first and last Training - whole months
   var stmt = db.prepare("SELECT min(date(date, 'start of month')) AS Start, max(date(date, 'start of month','+1 month')) AS End FROM Training");
@@ -69,24 +67,25 @@
   // timeline event handlers
   timeline.on('select', function(properties) {
     showTimelineGraph(properties);
+    showRundenGraph( properties);
   });
   timeline.on('doubleClick', function(properties) {
     console.log("event: doubelClick");
   });
   timeline.on('contextmenu', function(properties) {
-    //var a = timeline.getVisibleItems();
-    timeline.setSelection('');
-    showRundenInfo( properties);
-    event.preventDefault();
+    console.log("event: contextmenu");
+    //event.preventDefault();
   });
   timeline.on('rangechanged', function(properties) {
-    var a = timeline.getVisibleItems();
+    var visibleItems = timeline.getVisibleItems();
     timeline.setSelection('');
-    showTimelineGraph( {"items": [ a ]});
+    showTimelineGraph( {"items": [ visibleItems ]});
+    showRundenGraph( {"items": [ visibleItems ]});
   });
 
-  function showRundenInfo (properties) {
-    var stmt = db.prepare("SELECT id, distance AS DIST, reachedPoints AS RP, totalPoints AS TP, round(((reachedPoints*1.0)/(totalPoints*1.0)*100)) AS PC FROM Round WHERE trainingId IN (" + properties.item + ") ORDER BY id ASC");
+  function showRundenGraph (properties) {
+console.log(properties);
+    var stmt = db.prepare("SELECT id, distance AS DIST, reachedPoints AS RP, totalPoints AS TP, round(((reachedPoints*1.0)/(totalPoints*1.0)*100)) AS PC FROM Round WHERE trainingId IN (" + properties.items[0] + ") ORDER BY id ASC");
     var RDdata = [];
     while(stmt.step()) {
       var Runden = stmt.getAsObject();
@@ -94,9 +93,9 @@
         id: Runden['id'], dist: Runden['DIST'], percent: Runden['PC'], tooltip: Runden['RP']+"/"+Runden['TP']+"/"+Runden['PC']+"%",
       });
     }
-    new Chart("rundenInfo", {
-      //type: "bar",
-      type: "line",
+    new Chart("rundenGraph", {
+      type: "bar",
+      //type: "line",
       data: {
         labels: RDdata.map( row => row.dist ),
         datasets: [{
@@ -104,6 +103,12 @@
         }]
       },
       options: {
+        plugins: {
+          title: {
+            display: true,
+            text: "Runden",
+          },
+        },
         legend: {display: false},
         events: ['click'],
         scales: {
@@ -119,6 +124,7 @@
   }
 
   function showTimelineGraph (properties) {
+console.log(properties.items);
     var stmt = db.prepare("SELECT id, date AS D, reachedPoints AS RP, totalPoints AS TP, round(((reachedPoints*1.0)/(totalPoints*1.0)*100)) AS PC FROM Training WHERE id IN (" + properties.items + ") ORDER BY date ASC");
     var TLdata = [];
     while(stmt.step()) {
@@ -127,7 +133,7 @@
         date: Trainings['D'],  percent: Trainings['PC'], tooltip: Trainings['RP']+"/"+Trainings['TP']+"/"+Trainings['PC']+"%",
       });
     }
-    new Chart("trainingInfo", {
+    new Chart("trainingGraph", {
       type: "bar",
       data: {
         labels: TLdata.map( row => row.date ),
@@ -136,6 +142,12 @@
         }]
       },
       options: {
+        plugins: {
+          title: {
+            display: true,
+            text: "Trainings"
+          }
+        },
         legend: {display: false},
         events: ['click'],
         scales: {
