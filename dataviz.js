@@ -32,8 +32,10 @@
   // create timeline config
   var container = document.getElementById('timeline');
   var options = {
-    //height: '200px',
     height: '20vH',
+    stack: true,
+    verticalScroll: true,
+    zoomKey: 'ctrlKey',
     min: new Date( TLRange['Start'] ),        // lower limit of visible range
     max: new Date( TLRange['End'] ),          // upper limit of visible range
     zoomMin: 1000 * 60 * 60 * 24,             // one day in milliseconds
