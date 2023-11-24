@@ -17,6 +17,17 @@
   stmt.getAsObject({});
   var TLRange = stmt.getAsObject();
 
+  // Get distances to be used as filter
+  const distance = document.getElementById( "distance" );
+  var stmt = db.prepare("SELECT DISTINCT distance FROM Round");
+  while(stmt.step()) {
+    var option = document.createElement("option");
+    var opt = stmt.getAsObject();
+    option.text = opt.distance;
+    distance.add(option); 
+  }
+
+  // Get Training-info for Timeline overview
   var stmt = db.prepare("SELECT id AS TID, date AS D, location AS L, reachedPoints AS RP, totalPoints AS TP, round(((reachedPoints*1.0)/(totalPoints*1.0)*100)) AS PC FROM Training ORDER BY date ASC");
   var TLevents   = [];
   var TLeventids = [];
@@ -85,9 +96,17 @@
     showRundenInfo( {"items": [ visibleItems ]});
   });
 
+  // filter functions
+  distance.onchange = function () {
+    console.log(this.value);
+  };
+
   function showRundenInfo (properties) {
   rundenInfo.innerHTML = '';
-    var stmt = db.prepare("SELECT R.id AS ID, T.date AS Datum, distance AS Distanz, R.reachedPoints AS Punkte, R.totalPoints AS Max, round(((R.reachedPoints*1.0)/(R.totalPoints*1.0)*100)) AS Prozent FROM Round AS R, Training AS T WHERE R.trainingId = T.id AND R.trainingId IN (" + properties.items + ") GROUP BY R.id ORDER BY date ASC");
+    var SQLfilterDist="";
+    var filterDist = document.getElementById("distance").value;
+    filterDist == "" ? SQLfilterDist="" : SQLfilterDist=" AND distance='" + filterDist + "'";
+    var stmt = db.prepare("SELECT R.id AS ID, T.date AS Datum, distance AS Distanz, R.reachedPoints AS Punkte, R.totalPoints AS Max, round(((R.reachedPoints*1.0)/(R.totalPoints*1.0)*100)) AS Prozent FROM Round AS R, Training AS T WHERE R.trainingId = T.id AND R.trainingId IN (" + properties.items + ")" + SQLfilterDist + "GROUP BY R.id ORDER BY date ASC");
     const rundenTable = document.createElement("TABLE");
     const thead = rundenTable.createTHead();
     thead.insertRow(0);
