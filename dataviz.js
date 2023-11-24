@@ -101,12 +101,9 @@
     while(stmt.step()) {
       tbody.insertRow(i);
       var Runden = stmt.getAsObject();
-      tbody.rows[i].insertCell(0).innerText = Runden[rundenCols[0]];
-      tbody.rows[i].insertCell(1).innerText = Runden[rundenCols[1]];
-      tbody.rows[i].insertCell(2).innerText = Runden[rundenCols[2]];
-      tbody.rows[i].insertCell(3).innerText = Runden[rundenCols[3]];
-      tbody.rows[i].insertCell(4).innerText = Runden[rundenCols[4]];
-      tbody.rows[i].insertCell(5).innerText = Runden[rundenCols[5]];
+      for( let j=0; j< rundenCols.length; j++){
+        tbody.rows[i].insertCell(j).innerText = Runden[rundenCols[j]];
+      };
       i++;
     }
     rundenInfo.appendChild(rundenTable);
