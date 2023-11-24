@@ -8,7 +8,9 @@
 
   // Grab the HTML positioning elements
   const trainingGraph = document.getElementById( "trainingGraph" );
-  const rundenGraph  = document.getElementById( "rundenGraph" );
+  const rundenInfo    = document.getElementById( "rundenInfo" );
+  const passeInfo     = document.getElementById( "passeInfo" );
+  passeInfo.innerHTML = '';
 
   // Get dates of first and last Training - whole months
   var stmt = db.prepare("SELECT min(date(date, 'start of month')) AS Start, max(date(date, 'start of month','+1 month')) AS End FROM Training");
@@ -67,64 +69,50 @@
   // timeline event handlers
   timeline.on('select', function(properties) {
     showTimelineGraph(properties);
-    showRundenGraph( properties);
+    showRundenInfo( properties);
   });
   timeline.on('doubleClick', function(properties) {
     console.log("event: doubelClick");
   });
   timeline.on('contextmenu', function(properties) {
-    console.log("event: contextmenu");
-    //event.preventDefault();
+    console.log(properties);
+    event.preventDefault();
   });
   timeline.on('rangechanged', function(properties) {
     var visibleItems = timeline.getVisibleItems();
     timeline.setSelection('');
     showTimelineGraph( {"items": [ visibleItems ]});
-    showRundenGraph( {"items": [ visibleItems ]});
+    showRundenInfo( {"items": [ visibleItems ]});
   });
 
-  function showRundenGraph (properties) {
-console.log(properties);
-    var stmt = db.prepare("SELECT id, distance AS DIST, reachedPoints AS RP, totalPoints AS TP, round(((reachedPoints*1.0)/(totalPoints*1.0)*100)) AS PC FROM Round WHERE trainingId IN (" + properties.items[0] + ") ORDER BY id ASC");
-    var RDdata = [];
+  function showRundenInfo (properties) {
+  rundenInfo.innerHTML = '';
+    var stmt = db.prepare("SELECT R.id AS ID, T.date AS Datum, distance AS Distanz, R.reachedPoints AS Punkte, R.totalPoints AS Max, round(((R.reachedPoints*1.0)/(R.totalPoints*1.0)*100)) AS Prozent FROM Round AS R, Training AS T WHERE R.trainingId = T.id AND R.trainingId IN (" + properties.items + ") GROUP BY R.id ORDER BY date ASC");
+    const rundenTable = document.createElement("TABLE");
+    const thead = rundenTable.createTHead();
+    thead.insertRow(0);
+    const rundenCols = [ 'ID', 'Datum', 'Distanz', 'Punkte', 'Max', 'Prozent' ];
+    for( let i=0; i< rundenCols.length; i++){
+      thead.rows[0].insertCell(i).innerText = rundenCols[i];
+    };
+
+    const tbody = rundenTable.createTBody();
+    let i=0;
     while(stmt.step()) {
+      tbody.insertRow(i);
       var Runden = stmt.getAsObject();
-      RDdata.push({
-        id: Runden['id'], dist: Runden['DIST'], percent: Runden['PC'], tooltip: Runden['RP']+"/"+Runden['TP']+"/"+Runden['PC']+"%",
-      });
+      tbody.rows[i].insertCell(0).innerText = Runden[rundenCols[0]];
+      tbody.rows[i].insertCell(1).innerText = Runden[rundenCols[1]];
+      tbody.rows[i].insertCell(2).innerText = Runden[rundenCols[2]];
+      tbody.rows[i].insertCell(3).innerText = Runden[rundenCols[3]];
+      tbody.rows[i].insertCell(4).innerText = Runden[rundenCols[4]];
+      tbody.rows[i].insertCell(5).innerText = Runden[rundenCols[5]];
+      i++;
     }
-    new Chart("rundenGraph", {
-      type: "bar",
-      //type: "line",
-      data: {
-        labels: RDdata.map( row => row.dist ),
-        datasets: [{
-          data: RDdata.map( row => row.percent ),
-        }]
-      },
-      options: {
-        plugins: {
-          title: {
-            display: true,
-            text: "Runden",
-          },
-        },
-        legend: {display: false},
-        events: ['click'],
-        scales: {
-          yAxes: [{
-            ticks: {
-              min: 0,
-              max: 100,
-            }
-          }]
-        }
-      }
-    });
-  }
+    rundenInfo.appendChild(rundenTable);
+  };
 
   function showTimelineGraph (properties) {
-console.log(properties.items);
     var stmt = db.prepare("SELECT id, date AS D, reachedPoints AS RP, totalPoints AS TP, round(((reachedPoints*1.0)/(totalPoints*1.0)*100)) AS PC FROM Training WHERE id IN (" + properties.items + ") ORDER BY date ASC");
     var TLdata = [];
     while(stmt.step()) {

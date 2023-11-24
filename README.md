@@ -8,7 +8,7 @@ View/analyze your MyTargets Backupdata in the Browser
 - Show graph of trainings
 - Select individual trainings
 - Navigation menu
-- Select round info for individual training via right-click (1st try)
+- Show Round-Info for visible or selected Trainings
 
 ## ToDos
 possibly more..
