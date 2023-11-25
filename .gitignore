@@ -4,3 +4,4 @@ tmp/
 *.bak
 data.db
 favicon.ico
+RSYNC
