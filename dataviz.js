@@ -11,8 +11,7 @@
   const trainingGraph = document.getElementById( "trainingGraph" );
   const rundenGraph   = document.getElementById( "rundenGraph" );
   const rundenInfo    = document.getElementById( "rundenInfo" );
-  //const passeInfo     = document.getElementById( "passeInfo" );
-  //passeInfo.innerHTML = 'PASSE';
+  const passeInfo     = document.getElementById( "passeInfo" );
 
   // Get dates of first and last Training - whole months
   var stmt = db.prepare("\
@@ -120,6 +119,7 @@
     timeline.on('select', function(properties) {
       showTimelineGraph(properties);
       showRundenInfo( properties);
+      showPasseInfo( properties);
     });
     timeline.on('doubleClick', function(properties) {
       console.log("event: doubelClick");
@@ -133,6 +133,7 @@
       timeline.setSelection('');
       showTimelineGraph( {"items": [ visibleItems ]});
       showRundenInfo( {"items": [ visibleItems ]});
+      showPasseInfo( {"items": [ visibleItems ]});
     });
     return timeline;
   };
@@ -143,12 +144,14 @@
     TL=showTimeline('upd');
     showTimelineGraph( {"items": [ visibleItems ]});
     showRundenInfo( {"items": [ visibleItems ]});
+    showPasseInfo( {"items": [ visibleItems ]});
   };
   selDistance.onchange = function () {
     var visibleItems = TL.getVisibleItems();
     TL=showTimeline('upd');
     showTimelineGraph( {"items": [ visibleItems ]});
     showRundenInfo( {"items": [ visibleItems ]});
+    showPasseInfo( {"items": [ visibleItems ]});
   };
   selBow.onchange = function () {
     console.log(this.value);
@@ -156,6 +159,7 @@
     TL=showTimeline('upd');
     showTimelineGraph( {"items": [ visibleItems ]});
     showRundenInfo( {"items": [ visibleItems ]});
+    showPasseInfo( {"items": [ visibleItems ]});
   };
 
   function showTimelineGraph (properties) {
@@ -267,6 +271,47 @@
         }
       }
     });
+  };
+
+  function showPasseInfo (properties) {
+    passeInfo.innerHTML = '';
+    var fLocation="";
+    var selected = document.getElementById("selLocation").value;
+    selected == "" ? fLocation="" : fLocation=" AND location='" + selected + "'";
+    var fDistance="";
+    var selected = document.getElementById("selDistance").value;
+    selected == "" ? fDistance="" : fDistance=" AND distance='" + selected + "'";
+    var stmt = db.prepare("\
+      SELECT E.id AS ID, T.date AS Datum, distance AS Distanz, E.reachedPoints AS Punkte, \
+        E.totalPoints AS Max, round(((E.reachedPoints*1.0)/(E.totalPoints*1.0)*100)) AS Prozent \
+      FROM End AS E, Round AS R, Training AS T \
+      WHERE R.trainingId = T.id AND E.roundId = R.id AND R.trainingId IN (" + properties.items + ")" + fDistance + fLocation + "\
+      GROUP BY E.id \
+      ORDER BY date ASC");
+    const passeTable = document.createElement("TABLE");
+    const thead = passeTable.createTHead();
+    thead.insertRow(0);
+    const passeCols = [ 'ID', 'Datum', 'Distanz', 'Punkte', 'Max', 'Prozent' ];
+    for( let i=0; i< passeCols.length; i++){
+      thead.rows[0].insertCell(i).innerText = passeCols[i];
+    };
+
+    const tbody = passeTable.createTBody();
+    let i=0;
+    var RDdata = [];
+    while(stmt.step()) {
+      var Runden = stmt.getAsObject();
+      RDdata.push({
+        date: Runden['Datum'], points: Runden['Punkte'], max: Runden['Max'], percent: Runden['Prozent'],
+      });
+      tbody.insertRow(i);
+      for( let j=0; j< passeCols.length; j++){
+        tbody.rows[i].insertCell(j).innerText = Runden[passeCols[j]];
+      };
+      i++;
+    }
+    passeInfo.appendChild(passeTable);
+
   };
 
   // now show the Timeline Overview
