@@ -119,7 +119,6 @@
     // timeline event handlers
     timeline.on('select', function(properties) {
       showTimelineGraph(properties);
-      showRundenGraph( {"items": [ visibleItems ]});
       showRundenInfo( properties);
     });
     timeline.on('doubleClick', function(properties) {
@@ -133,7 +132,6 @@
       var visibleItems = timeline.getVisibleItems();
       timeline.setSelection('');
       showTimelineGraph( {"items": [ visibleItems ]});
-      showRundenGraph( {"items": [ visibleItems ]});
       showRundenInfo( {"items": [ visibleItems ]});
     });
     return timeline;
@@ -144,14 +142,12 @@
     var visibleItems = TL.getVisibleItems();
     TL=showTimeline('upd');
     showTimelineGraph( {"items": [ visibleItems ]});
-    showRundenGraph( {"items": [ visibleItems ]});
     showRundenInfo( {"items": [ visibleItems ]});
   };
   selDistance.onchange = function () {
     var visibleItems = TL.getVisibleItems();
     TL=showTimeline('upd');
     showTimelineGraph( {"items": [ visibleItems ]});
-    showRundenGraph( {"items": [ visibleItems ]});
     showRundenInfo( {"items": [ visibleItems ]});
   };
   selBow.onchange = function () {
@@ -159,7 +155,6 @@
     var visibleItems = TL.getVisibleItems();
     TL=showTimeline('upd');
     showTimelineGraph( {"items": [ visibleItems ]});
-    showRundenGraph( {"items": [ visibleItems ]});
     showRundenInfo( {"items": [ visibleItems ]});
   };
 
