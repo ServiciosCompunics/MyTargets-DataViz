@@ -8,7 +8,7 @@ View/analyze your MyTargets Backupdata in the Browser
 - Show graph of trainings
 - Select individual trainings
 - Navigation menu
-- Show Round-Info for visible or selected Trainings
+- Show Round-Info and Round-Graph for visible or selected Trainings
 - Filters: synchronize display after change (Location/Distance/Bow/)
 
 ## ToDos
@@ -24,3 +24,4 @@ possibly more..
 - Shots visualizations
 
 ## Problems
+- Positioning of DIVs/CANVASes via CSS !?

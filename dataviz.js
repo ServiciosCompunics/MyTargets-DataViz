@@ -9,9 +9,10 @@
   // Grab the HTML positioning elements
   const timelineDiv   = document.getElementById( "timeline" );
   const trainingGraph = document.getElementById( "trainingGraph" );
+  const rundenGraph   = document.getElementById( "rundenGraph" );
   const rundenInfo    = document.getElementById( "rundenInfo" );
-  const passeInfo     = document.getElementById( "passeInfo" );
-  passeInfo.innerHTML = 'PASSE';
+  //const passeInfo     = document.getElementById( "passeInfo" );
+  //passeInfo.innerHTML = 'PASSE';
 
   // Get dates of first and last Training - whole months
   var stmt = db.prepare("\
@@ -118,6 +119,7 @@
     // timeline event handlers
     timeline.on('select', function(properties) {
       showTimelineGraph(properties);
+      showRundenGraph( {"items": [ visibleItems ]});
       showRundenInfo( properties);
     });
     timeline.on('doubleClick', function(properties) {
@@ -131,6 +133,7 @@
       var visibleItems = timeline.getVisibleItems();
       timeline.setSelection('');
       showTimelineGraph( {"items": [ visibleItems ]});
+      showRundenGraph( {"items": [ visibleItems ]});
       showRundenInfo( {"items": [ visibleItems ]});
     });
     return timeline;
@@ -141,12 +144,14 @@
     var visibleItems = TL.getVisibleItems();
     TL=showTimeline('upd');
     showTimelineGraph( {"items": [ visibleItems ]});
+    showRundenGraph( {"items": [ visibleItems ]});
     showRundenInfo( {"items": [ visibleItems ]});
   };
   selDistance.onchange = function () {
     var visibleItems = TL.getVisibleItems();
     TL=showTimeline('upd');
     showTimelineGraph( {"items": [ visibleItems ]});
+    showRundenGraph( {"items": [ visibleItems ]});
     showRundenInfo( {"items": [ visibleItems ]});
   };
   selBow.onchange = function () {
@@ -154,6 +159,7 @@
     var visibleItems = TL.getVisibleItems();
     TL=showTimeline('upd');
     showTimelineGraph( {"items": [ visibleItems ]});
+    showRundenGraph( {"items": [ visibleItems ]});
     showRundenInfo( {"items": [ visibleItems ]});
   };
 
@@ -225,15 +231,47 @@
 
     const tbody = rundenTable.createTBody();
     let i=0;
+    var RDdata = [];
     while(stmt.step()) {
-      tbody.insertRow(i);
       var Runden = stmt.getAsObject();
+      RDdata.push({
+        date: Runden['Datum'], points: Runden['Punkte'], max: Runden['Max'], percent: Runden['Prozent'],
+      });
+      tbody.insertRow(i);
       for( let j=0; j< rundenCols.length; j++){
         tbody.rows[i].insertCell(j).innerText = Runden[rundenCols[j]];
       };
       i++;
     }
     rundenInfo.appendChild(rundenTable);
+
+    new Chart("rundenGraph", {
+      type: "bar",
+      data: {
+        labels: RDdata.map( row => row.date ),
+        datasets: [{
+          data: RDdata.map( row => row.percent ),
+        }]
+      },
+      options: {
+        plugins: {
+          title: {
+            display: true,
+            text: "Runden"
+          }
+        },
+        legend: {display: false},
+        events: ['click'],
+        scales: {
+          yAxes: [{
+            ticks: {
+              min: 0,
+              max: 100,
+            }
+          }]
+        }
+      }
+    });
   };
 
   // now show the Timeline Overview
