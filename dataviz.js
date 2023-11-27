@@ -214,7 +214,7 @@
     var selected = document.getElementById("selDistance").value;
     selected == "" ? fDistance="" : fDistance=" AND distance='" + selected + "'";
     var stmt = db.prepare("\
-      SELECT R.id AS ID, T.date AS Datum, distance AS Distanz, R.reachedPoints AS Punkte, \
+      SELECT T.date AS Datum, distance AS Distanz, R.reachedPoints AS Punkte, \
         R.totalPoints AS Max, round(((R.reachedPoints*1.0)/(R.totalPoints*1.0)*100)) AS Prozent \
       FROM Round AS R, Training AS T \
       WHERE R.trainingId = T.id AND R.trainingId IN (" + properties.items + ")" + fDistance + fLocation + "\
@@ -223,7 +223,7 @@
     const rundenTable = document.createElement("TABLE");
     const thead = rundenTable.createTHead();
     thead.insertRow(0);
-    const rundenCols = [ 'ID', 'Datum', 'Distanz', 'Punkte', 'Max', 'Prozent' ];
+    const rundenCols = [ 'Datum', 'Distanz', 'Punkte', 'Max', 'Prozent' ];
     for( let i=0; i< rundenCols.length; i++){
       thead.rows[0].insertCell(i).innerText = rundenCols[i];
     };
@@ -282,36 +282,56 @@
     var selected = document.getElementById("selDistance").value;
     selected == "" ? fDistance="" : fDistance=" AND distance='" + selected + "'";
     var stmt = db.prepare("\
-      SELECT E.id AS ID, T.date AS Datum, distance AS Distanz, E.reachedPoints AS Punkte, \
-        E.totalPoints AS Max, round(((E.reachedPoints*1.0)/(E.totalPoints*1.0)*100)) AS Prozent \
-      FROM End AS E, Round AS R, Training AS T \
-      WHERE R.trainingId = T.id AND E.roundId = R.id AND R.trainingId IN (" + properties.items + ")" + fDistance + fLocation + "\
-      GROUP BY E.id \
+      SELECT T.date AS Datum, distance AS Distanz, E.reachedPoints AS Punkte, \
+        E.totalPoints AS Max, round(((E.reachedPoints*1.0)/(E.totalPoints*1.0)*100)) AS Prozent, E.shotCount AS Schuss, \
+        S.scoringRing AS Ring \
+      FROM Shot AS S, End AS E, Round AS R, Training AS T \
+      WHERE S.endId=E.id AND E.roundId = R.id AND R.trainingId = T.id AND R.trainingId IN (" + properties.items + ")" + fDistance + fLocation + "\
+      GROUP BY S.id, E.id, R.id \
       ORDER BY date ASC");
+
     const passeTable = document.createElement("TABLE");
     const thead = passeTable.createTHead();
     thead.insertRow(0);
-    const passeCols = [ 'ID', 'Datum', 'Distanz', 'Punkte', 'Max', 'Prozent' ];
+    const passeCols = [ 'Datum', 'Distanz', 'Punkte', 'Max', 'Prozent', 'Schuss', 'Shot1', 'Shot2', 'Shot3', 'Shot4', 'Shot5', 'Shot6' ];
     for( let i=0; i< passeCols.length; i++){
       thead.rows[0].insertCell(i).innerText = passeCols[i];
     };
 
     const tbody = passeTable.createTBody();
     let i=0;
+    let c=0;
+    let r=[];
     var RDdata = [];
     while(stmt.step()) {
       var Runden = stmt.getAsObject();
+      // prepare Graph
       RDdata.push({
         date: Runden['Datum'], points: Runden['Punkte'], max: Runden['Max'], percent: Runden['Prozent'],
       });
-      tbody.insertRow(i);
-      for( let j=0; j< passeCols.length; j++){
-        tbody.rows[i].insertCell(j).innerText = Runden[passeCols[j]];
-      };
-      i++;
-    }
-    passeInfo.appendChild(passeTable);
 
+      // fill table body..
+      if( c < Runden['Schuss']) {
+        // save shot result
+        r.push(Runden['Ring']);
+        c++;
+      } else {
+        tbody.insertRow(i);
+        // insert round data
+        for( let j=0; j<(passeCols.length-Runden['Schuss']); j++){
+          tbody.rows[i].insertCell(j).innerText = Runden[passeCols[j]];
+        }
+        // add shot results for this passe
+        let l=(passeCols.length-Runden['Schuss']);
+        for( let sc=0; sc < r.length; sc++) {
+            tbody.rows[i].insertCell(l++).innerText = r[sc];
+        }
+        i++;
+        r=[];
+        c=0;
+      }
+      passeInfo.appendChild(passeTable);
+    };
   };
 
   // now show the Timeline Overview
