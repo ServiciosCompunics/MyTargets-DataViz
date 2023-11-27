@@ -311,7 +311,7 @@
       });
 
       // fill table body..
-      if( c < Runden['Schuss']) {
+      if( c < Runden['Schuss']-1) {
         // save shot result
         r.push(Runden['Ring']);
         c++;
@@ -322,7 +322,7 @@
           tbody.rows[i].insertCell(j).innerText = Runden[passeCols[j]];
         }
         // add shot results for this passe
-        let l=(passeCols.length-Runden['Schuss']);
+        let l=(passeCols.length-Runden['Schuss']-1);
         for( let sc=0; sc < r.length; sc++) {
             tbody.rows[i].insertCell(l++).innerText = r[sc];
         }
@@ -330,8 +330,8 @@
         r=[];
         c=0;
       }
-      passeInfo.appendChild(passeTable);
-    };
+    }
+    passeInfo.appendChild(passeTable);
   };
 
   // now show the Timeline Overview

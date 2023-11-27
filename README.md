@@ -27,4 +27,3 @@ possibly more..
 
 ## Problems
 - Positioning of DIVs/CANVASes via CSS !?
-- Check count of rounds/passe
