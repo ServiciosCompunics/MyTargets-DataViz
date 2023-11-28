@@ -284,7 +284,7 @@
     var stmt = db.prepare("\
       SELECT T.date AS Datum, distance AS Distanz, E.reachedPoints AS Punkte, \
         E.totalPoints AS Max, round(((E.reachedPoints*1.0)/(E.totalPoints*1.0)*100)) AS Prozent, E.shotCount AS Schuss, \
-        S.scoringRing AS Ring \
+        S.scoringRing AS Ring, round(S.x,2) AS xPos, round(S.y,2) AS yPos \
       FROM Shot AS S, End AS E, Round AS R, Training AS T \
       WHERE S.endId=E.id AND E.roundId = R.id AND R.trainingId = T.id AND R.trainingId IN (" + properties.items + ")" + fDistance + fLocation + "\
       GROUP BY S.id, E.id, R.id \
@@ -302,6 +302,8 @@
     let i=0;
     let c=0;
     let r=[];
+    let x=[];
+    let y=[];
     var RDdata = [];
     while(stmt.step()) {
       var Runden = stmt.getAsObject();
@@ -314,12 +316,18 @@
       if( c < Runden['Schuss']-1) {
         // save shot result
         r.push(Runden['Ring']);
+        x.push(Runden['xPos']);
+        y.push(Runden['yPos']);
         c++;
       } else {
         r.push(Runden['Ring']);
+        x.push(Runden['xPos']);
+        y.push(Runden['yPos']);
         tbody.insertRow(i);
         // insert round data
-        for( let j=0; j<(passeCols.length-Runden['Schuss']); j++){
+        let j=0;
+        tbody.rows[i].insertCell(j).innerHTML = '<button onclick="showTrefferBild(['+x+'],['+y+'])">'+Runden[passeCols[j]]+'</button>';
+        for( let j=1; j<(passeCols.length-Runden['Schuss']); j++){
           tbody.rows[i].insertCell(j).innerText = Runden[passeCols[j]];
         }
         // add shot results for this passe
@@ -329,6 +337,8 @@
         }
         i++;
         r=[];
+        x=[];
+        y=[];
         c=0;
       }
     }

@@ -24,7 +24,6 @@ possibly more..
 ### Graphs
 - Statistics with filtering (Location/Distance/Bow/Arrow/..?)
 - Shots visualizations
-- Convert Shot-Rings into values/points
 
 ## Problems
 - Positioning of DIVs/CANVASes via CSS !?
