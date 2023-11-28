@@ -11,6 +11,7 @@ View/analyze your MyTargets Backupdata in the Browser
 - Show Round-Info and Round-Graph for visible or selected Trainings
 - Filters: synchronize display after change (Location/Distance/Bow/)
 - Show Passe info incl. Shots (Rings)
+- Show shot result as graphics/rings
 
 ## ToDos
 possibly more..

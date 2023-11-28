@@ -293,7 +293,7 @@
     const passeTable = document.createElement("TABLE");
     const thead = passeTable.createTHead();
     thead.insertRow(0);
-    const passeCols = [ 'Datum', 'Distanz', 'Punkte', 'Max', 'Prozent', 'Schuss', 'Shot1', 'Shot2', 'Shot3', 'Shot4', 'Shot5', 'Shot6' ];
+    const passeCols = [ 'Datum', 'Distanz', 'Punkte', 'Max', 'Prozent', 'Schuss', '1', '2', '3', '4', '5', '6' ];
     for( let i=0; i< passeCols.length; i++){
       thead.rows[0].insertCell(i).innerText = passeCols[i];
     };
@@ -324,7 +324,7 @@
         // add shot results for this passe
         let l=(passeCols.length-Runden['Schuss']-1);
         for( let sc=0; sc < r.length; sc++) {
-            tbody.rows[i].insertCell(l++).innerText = r[sc];
+            tbody.rows[i].insertCell(l++).innerHTML = '<img src="./img/' + r[sc] + '-50.png" alt="R:'+r[sc]+'">';
         }
         i++;
         r=[];
