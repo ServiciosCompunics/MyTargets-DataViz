@@ -316,13 +316,14 @@
         r.push(Runden['Ring']);
         c++;
       } else {
+        r.push(Runden['Ring']);
         tbody.insertRow(i);
         // insert round data
         for( let j=0; j<(passeCols.length-Runden['Schuss']); j++){
           tbody.rows[i].insertCell(j).innerText = Runden[passeCols[j]];
         }
         // add shot results for this passe
-        let l=(passeCols.length-Runden['Schuss']-1);
+        let l=(passeCols.length-Runden['Schuss']);
         for( let sc=0; sc < r.length; sc++) {
             tbody.rows[i].insertCell(l++).innerHTML = '<img src="./img/' + r[sc] + '-50.png" alt="R:'+r[sc]+'">';
         }
