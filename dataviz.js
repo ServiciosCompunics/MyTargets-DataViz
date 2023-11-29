@@ -12,6 +12,8 @@
   const rundenGraph   = document.getElementById( "rundenGraph" );
   const rundenInfo    = document.getElementById( "rundenInfo" );
   const passeInfo     = document.getElementById( "passeInfo" );
+  let TrainingChart;
+  let RundenChart;
 
   // Get dates of first and last Training - whole months
   var stmt = db.prepare("\
@@ -176,7 +178,8 @@
         date: Trainings['D'],  percent: Trainings['PC'], tooltip: Trainings['RP']+"/"+Trainings['TP']+"/"+Trainings['PC']+"%",
       });
     }
-    new Chart("trainingGraph", {
+    if( TrainingChart ){ TrainingChart.destroy(); }
+      TrainingChart = new Chart("trainingGraph", {
       type: "bar",
       data: {
         labels: TLdata.map( row => row.date ),
@@ -186,20 +189,20 @@
       },
       options: {
         plugins: {
+        legend: {display: false},
           title: {
             display: true,
             text: "Trainings"
           }
         },
-        legend: {display: false},
         events: ['click'],
         scales: {
-          yAxes: [{
-            ticks: {
-              min: 0,
-              max: 100,
-            }
-          }]
+          x: {
+          },
+          y: {
+            min: 0,
+            max: 100,
+          }
         }
       }
     });
@@ -244,7 +247,8 @@
     }
     rundenInfo.appendChild(rundenTable);
 
-    new Chart("rundenGraph", {
+    if( RundenChart ){ RundenChart.destroy(); }
+      RundenChart = new Chart("rundenGraph", {
       type: "bar",
       data: {
         labels: RDdata.map( row => row.date ),
@@ -254,20 +258,20 @@
       },
       options: {
         plugins: {
+        legend: {display: false},
           title: {
             display: true,
             text: "Runden"
           }
         },
-        legend: {display: false},
         events: ['click'],
         scales: {
-          yAxes: [{
-            ticks: {
-              min: 0,
-              max: 100,
-            }
-          }]
+          x: {
+          },
+          y: {
+            min: 0,
+            max: 100,
+          }
         }
       }
     });

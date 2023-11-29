@@ -12,6 +12,7 @@ View/analyze your MyTargets Backupdata in the Browser
 - Filters: synchronize display after change (Location/Distance/Bow/)
 - Show Passe info incl. Shots (Rings)
 - Show shot result as graphics/rings
+- Function: showTrefferBild working - display needs fix
 
 ## ToDos
 possibly more..
