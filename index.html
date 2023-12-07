@@ -2,30 +2,26 @@
 <html>
   <head>
     <link  href="./dist/vis-timeline-graph2d.min.css" rel="stylesheet" type="text/css" />
-    <script src='./dist/sql-wasm.js'></script>
+    <script src="./dist/sql-wasm.js"></script>
     <script src="./dist/vis.min.js"></script>
     <script src="./dist/jquery.min.js"> </script>
     <script src="./dist/chart.umd.min.js"> </script>
     <script type="module" src="./dataviz.js"></script>
     <script type="text/javascript">
+      var TrefferChart = null;
       function setColor(score){
         if( score < 3 || score > 5) return 'black';
         return 'white';
       };
       function showTrefferBild(x,y) {
-        var shots = [];
+        var schuss = [];
         for( let i=0; i < x.length; i++) {
-          shots.push([ { 'x': x[i], 'y': y[i], }, ]);
+          schuss.push( { x: x[i], y: y[i], r: 5 }, );
         }
 
         const data = {
-          labels: shots.map(row => row.x),
           datasets: [{
-            data: shots.map( row => ({
-              x: row.width,
-              y: row.height,
-              r: row.count
-            }))
+            data: schuss,
           }]
         };
 
@@ -34,53 +30,84 @@
           type: 'bubble',
           data,
           options: {
+            plugins: {
+            legend: {display: false},
+              title: {
+                display: true,
+                text: "Trefferbild"
+              }
+            },
             aspectRatio: 1,
             scales: {
-              x: { max: 50 },
-              y: { max: 50 },
+              x: { display: false, min: -2, max: 2 },
+              y: { display: false, min: -2, max: 2 },
             }
           }
         };
 
         // draw TrefferBild Chart
-        new Chart( document.getElementById('TrefferBild'), config );
+        var myWindow = window.open("", "", "toolbar=no,scrollbars=yes,resizable=no,top=300,left=300,width=600,height=600"); 
+        if( TrefferChart ){ TrefferChart.destroy(); }
+        TrefferChart = new Chart( myWindow.document.getElementById('TrefferBild'), config );
       };
     </script>
 
     <style type="text/css">
-     #timeline {
-       position: relative;
-       top: 30px;
-       width: 100%;
-       height: 20%;
-     }
-     #rundenInfo {
+     #menu {
        position: absolute;
-       right: 0px;
-       width: 30%;
-       height: 20%;
-       overflow: auto;
-     }
-     #passeInfo {
-       position: relative;
-       right: 0px;
-       width: 100%;
-       height: 10%;
-       overflow: auto;
-     }
-     #TrefferBild {
-       position: absolute;
-       display: inline-block;
-       top: 300px;
-       width: 'inherit';
-       height: 'inherit';
-     }
-     .menu {
-       position: absolute;
-       top: 0;
-       left: 0;
+       top: 0px;
+       left: 0px;
        margin: 8px;
        z-index: 9999;
+     }
+     #timeline {
+       position:relative;
+       top: 30px;
+       width: 100%;
+       height: 100px;
+     }
+     #trainingGraphD {
+       position:relative;
+       left: 0px;
+       width: 100%;
+       height: 300px;
+     }
+     #rundenInfoD {
+       position:relative;
+       width: 100%;
+       height: 200px;
+       overflow:auto;
+     }
+     #rundenGraphD {
+       position:absolute;
+       left: 0px;
+       width: 70%;
+     }
+     #rundenInfo {
+       position:absolute;
+       width: 30%;
+       right: 0px;
+       overflow:auto;
+     }
+     #passeInfoD {
+       position:relative;
+       width: 100%;
+       height: 200px;
+       overflow:auto;
+     }
+     #passeInfo {
+       position:absolute;
+       left: 0px;
+       width: 60%;
+       overflow:auto;
+     }
+     #TrefferBildD {
+       position:absolute;
+       right: 0px;
+       background-image: url("img/fita-40-600x600.png");
+       background-repeat: no-repeat;
+       background-position: center;
+       background-size: contain;
      }
     .vis-item {
      background-color: #ffffff;
@@ -106,11 +133,13 @@
     }
     .vis-timeline.vis-bottom {
      border-style: none;
+     width: 100%;
+     height: 100px;
     }
     </style>
   </head>
   <body>
-    <div class="menu">
+    <div id="menu">
       <input type="button" id="zoomIn"    value="Zoom in"/>
       <input type="button" id="zoomOut"   value="Zoom out"/>
       <input type="button" id="moveLeft"  value="Zur&uuml;ck"/>
@@ -120,11 +149,14 @@
       <select id="selBow">        <option value="">Bogen</option></select>
     </div>
     <div    id="timeline"></div>
-    <div    style='position:relative; left:0px;'><canvas id='trainingGraph' width='100vH' height='20vH'></canvas></div>
-    <div    style='position:relative; left:0px;'><canvas id='rundenGraph'   width='70vH'  height='20vH'></canvas></div>
-    <div    id="rundenInfo" style='position:absolute; right:0px; overflow:auto;'></div>
+    <div    id="trainingGraphD"><canvas id='trainingGraph'></canvas></div>
+    <div    id="rundenInfoD">
+    <div    id="rundenGraphD">  <canvas id='rundenGraph'></canvas></div>
+    <div    id="rundenInfo"></div>
+    </div>
+    <div    id="passeInfoD">
     <div    id="passeInfo"></div>
-    <div    style='position:relative: left:0px;'><canvas id="TrefferBild"></canvas></div>
-    <div    style='position:absolute; left:0px;'><canvas id="shotGraph"     width='100vH' height='20vH'></canvas></div>
+    <div    id="TrefferBildD">  <canvas id="TrefferBild"></canvas></div>
+    </div>
   </body>
 </html>
