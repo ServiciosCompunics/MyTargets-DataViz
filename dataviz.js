@@ -179,7 +179,7 @@
       });
     }
     if( TrainingChart ){ TrainingChart.destroy(); }
-      TrainingChart = new Chart("trainingGraph", {
+    TrainingChart = new Chart("trainingGraph", {
       type: "bar",
       data: {
         labels: TLdata.map( row => row.date ),
@@ -188,14 +188,22 @@
         }]
       },
       options: {
+        interaction: {
+          intersect: false,
+          mode: 'index',
+        },
         plugins: {
-        legend: {display: false},
+          legend: {display: false},
+          tooltip: {
+            callbacks: {
+              label: TChartTT,
+            },
+          },
           title: {
             display: true,
             text: "Trainings"
-          }
+          },
         },
-        events: ['click'],
         scales: {
           x: {
           },
@@ -207,6 +215,14 @@
       }
     });
   };
+
+  const TChartTT = (tooltipItems) => {
+    return 'Trefferquote: ' + tooltipItems.raw + '%';
+  }
+
+  const RChartTT = (tooltipItems) => {
+    return 'Trefferquote: ' + tooltipItems.raw + '%';
+  }
 
   function showRundenInfo (properties) {
     rundenInfo.innerHTML = '';
@@ -259,12 +275,16 @@
       options: {
         plugins: {
         legend: {display: false},
+          tooltip: {
+            callbacks: {
+              label: RChartTT,
+            },
+          },
           title: {
             display: true,
             text: "Runden"
           }
         },
-        events: ['click'],
         scales: {
           x: {
           },
