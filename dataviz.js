@@ -166,19 +166,19 @@
 
   function showTimelineGraph (properties) {
     const TChartTTlabel = (tooltipItems) => {
-      return 'Treffer: ' + TLdata[tooltipItems.dataIndex].reached + ' / ' + TLdata[tooltipItems.dataIndex].total + ' / ' + TLdata[tooltipItems.dataIndex].percent + '%';
+      return 'Treffer: ' + TLdata[tooltipItems.dataIndex].points + ' / ' + TLdata[tooltipItems.dataIndex].max + ' / ' + TLdata[tooltipItems.dataIndex].percent + '%';
     }
   
     const TChartTTfooter = (tooltipItems) => {
-      let sumReached = 0;
+      let sumPoints = 0;
       let sumMax = 0;
       let sumPercent = 0;
       for( let i=0; i< TLdata.length; i++) {
-        sumReached += TLdata[i].reached;
-        sumMax += TLdata[i].total;
+        sumPoints += TLdata[i].points;
+        sumMax += TLdata[i].max;
       }
-      sumPercent = (sumReached/sumMax)*100;
-      return 'Gesamt: ' + sumReached + ' / ' + sumMax + ' / ' + sumPercent.toFixed(0) + "%";
+      sumPercent = (sumPoints/sumMax)*100;
+      return 'Gesamt: ' + sumPoints + ' / ' + sumMax + ' / ' + sumPercent.toFixed(0) + "%";
     }
 
     var stmt = db.prepare("\
@@ -191,7 +191,7 @@
     while(stmt.step()) {
       var Trainings = stmt.getAsObject();
       TLdata.push({
-        date: Trainings['D'],  percent: Trainings['PC'], reached: Trainings['RP'], total: Trainings['TP'],
+        date: Trainings['D'],  percent: Trainings['PC'], points: Trainings['RP'], max: Trainings['TP'],
       });
     }
     if( TrainingChart ){ TrainingChart.destroy(); }
@@ -232,10 +232,6 @@
       }
     });
   };
-
-  const RChartTT = (tooltipItems) => {
-    return 'Trefferquote: ' + tooltipItems.raw + '%';
-  }
 
   function showRundenInfo (properties) {
     rundenInfo.innerHTML = '';
@@ -278,6 +274,14 @@
       i++;
     }
     rundenInfo.appendChild(rundenTable);
+
+    const RChartTT = (tooltipItems) => {
+//console.log('RDdata');
+//console.log(RDdata);
+//console.log('tooltipItems');
+//console.log(tooltipItems);
+      return 'Trefferquote: ' + tooltipItems.raw + '%';
+    }
 
     if( RundenChart ){ RundenChart.destroy(); }
       RundenChart = new Chart("rundenGraph", {
