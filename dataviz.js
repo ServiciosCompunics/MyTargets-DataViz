@@ -76,7 +76,7 @@
     while(stmt.step()) {
       var Trainings = stmt.getAsObject();
       TLevents.push({
-          'id': Trainings['TID'], 'start': new Date( Trainings['D'] ), 'content': Trainings['TT'], 'title': Trainings['L']+": "+Trainings['RP']+"/"+Trainings['TP']+"/"+Trainings['PC']+"%",
+          'id': Trainings['TID'], 'start': new Date( Trainings['D'] ), 'content': Trainings['TT'], 'title': Trainings['L']+": "+Trainings['RP']+" / "+Trainings['TP']+" / "+Trainings['PC']+"%",
       });
     }
     var items = new vis.DataSet( TLevents );
@@ -165,6 +165,22 @@
   };
 
   function showTimelineGraph (properties) {
+    const TChartTTlabel = (tooltipItems) => {
+      return 'Treffer: ' + TLdata[tooltipItems.dataIndex].reached + ' / ' + TLdata[tooltipItems.dataIndex].total + ' / ' + TLdata[tooltipItems.dataIndex].percent + '%';
+    }
+  
+    const TChartTTfooter = (tooltipItems) => {
+      let sumReached = 0;
+      let sumMax = 0;
+      let sumPercent = 0;
+      for( let i=0; i< TLdata.length; i++) {
+        sumReached += TLdata[i].reached;
+        sumMax += TLdata[i].total;
+      }
+      sumPercent = (sumReached/sumMax)*100;
+      return 'Gesamt: ' + sumReached + ' / ' + sumMax + ' / ' + sumPercent.toFixed(0) + "%";
+    }
+
     var stmt = db.prepare("\
       SELECT id, date AS D, reachedPoints AS RP, totalPoints AS TP, \
         round(((reachedPoints*1.0)/(totalPoints*1.0)*100)) AS PC \
@@ -175,7 +191,7 @@
     while(stmt.step()) {
       var Trainings = stmt.getAsObject();
       TLdata.push({
-        date: Trainings['D'],  percent: Trainings['PC'], tooltip: Trainings['RP']+"/"+Trainings['TP']+"/"+Trainings['PC']+"%",
+        date: Trainings['D'],  percent: Trainings['PC'], reached: Trainings['RP'], total: Trainings['TP'],
       });
     }
     if( TrainingChart ){ TrainingChart.destroy(); }
@@ -196,7 +212,8 @@
           legend: {display: false},
           tooltip: {
             callbacks: {
-              label: TChartTT,
+              label: TChartTTlabel,
+              footer: TChartTTfooter,
             },
           },
           title: {
@@ -215,10 +232,6 @@
       }
     });
   };
-
-  const TChartTT = (tooltipItems) => {
-    return 'Trefferquote: ' + tooltipItems.raw + '%';
-  }
 
   const RChartTT = (tooltipItems) => {
     return 'Trefferquote: ' + tooltipItems.raw + '%';
@@ -240,7 +253,9 @@
       GROUP BY R.id \
       ORDER BY date ASC");
     const rundenTable = document.createElement("TABLE");
+    rundenTable.classList.add('ChartTable');
     const thead = rundenTable.createTHead();
+    thead.classList.add('ChartTableHead');
     thead.insertRow(0);
     const rundenCols = [ 'Datum', 'Distanz', 'Punkte', 'Max', 'Prozent' ];
     for( let i=0; i< rundenCols.length; i++){
@@ -248,6 +263,7 @@
     };
 
     const tbody = rundenTable.createTBody();
+    tbody.classList.add('ChartTableBody');
     let i=0;
     var RDdata = [];
     while(stmt.step()) {
@@ -315,7 +331,9 @@
       ORDER BY date ASC");
 
     const passeTable = document.createElement("TABLE");
+    passeTable.classList.add('ChartTable');
     const thead = passeTable.createTHead();
+    thead.classList.add('ChartTableHead');
     thead.insertRow(0);
     const passeCols = [ 'Datum', 'Distanz', 'Punkte', 'Max', 'Prozent', 'Schuss', '1', '2', '3', '4', '5', '6' ];
     for( let i=0; i< passeCols.length; i++){
@@ -323,6 +341,7 @@
     };
 
     const tbody = passeTable.createTBody();
+    tbody.classList.add('ChartTableBody');
     let i=0;
     let c=0;
     let r=[];
