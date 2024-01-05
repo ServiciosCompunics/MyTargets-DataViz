@@ -52,7 +52,6 @@
 
   function showTimeline(mode) {
     if( mode=='upd') { TL.destroy(); }
-
     // optional filters for SQL-timeline
     var fLocation="";
     var selected = document.getElementById("selLocation").value;
@@ -165,8 +164,12 @@
   };
 
   function showTimelineGraph (properties) {
+    const TChartTTafterTitle = (tooltipItems) => {
+      return 'Training (erreicht / max / Prozent): ';
+    }
+
     const TChartTTlabel = (tooltipItems) => {
-      return 'Treffer: ' + TLdata[tooltipItems.dataIndex].points + ' / ' + TLdata[tooltipItems.dataIndex].max + ' / ' + TLdata[tooltipItems.dataIndex].percent + '%';
+      return TLdata[tooltipItems.dataIndex].points + ' / ' + TLdata[tooltipItems.dataIndex].max + ' / ' + TLdata[tooltipItems.dataIndex].percent + '%';
     }
   
     const TChartTTfooter = (tooltipItems) => {
@@ -212,6 +215,7 @@
           legend: {display: false},
           tooltip: {
             callbacks: {
+              afterTitle: TChartTTafterTitle,
               label: TChartTTlabel,
               footer: TChartTTfooter,
             },
@@ -275,12 +279,24 @@
     }
     rundenInfo.appendChild(rundenTable);
 
-    const RChartTT = (tooltipItems) => {
-//console.log('RDdata');
-//console.log(RDdata);
-//console.log('tooltipItems');
-//console.log(tooltipItems);
-      return 'Trefferquote: ' + tooltipItems.raw + '%';
+    const RChartTTlabel = (tooltipItems) => {
+      return RDdata[tooltipItems.dataIndex].points + ' / ' + RDdata[tooltipItems.dataIndex].max + ' / ' + RDdata[tooltipItems.dataIndex].percent + '%';
+    }
+  
+    const RChartTTafterTitle = (tooltipItems) => {
+      return 'Runde (erreicht / max / Prozent): ';
+    }
+
+    const RChartTTfooter = (tooltipItems) => {
+      let sumPoints = 0;
+      let sumMax = 0;
+      let sumPercent = 0;
+      for( let i=0; i< RDdata.length; i++) {
+        sumPoints += RDdata[i].points;
+        sumMax += RDdata[i].max;
+      }
+      sumPercent = (sumPoints/sumMax)*100;
+      return 'Gesamt: ' + sumPoints + ' / ' + sumMax + ' / ' + sumPercent.toFixed(0) + "%";
     }
 
     if( RundenChart ){ RundenChart.destroy(); }
@@ -297,7 +313,9 @@
         legend: {display: false},
           tooltip: {
             callbacks: {
-              label: RChartTT,
+              afterTitle: RChartTTafterTitle,
+              label: RChartTTlabel,
+              footer: RChartTTfooter,
             },
           },
           title: {
