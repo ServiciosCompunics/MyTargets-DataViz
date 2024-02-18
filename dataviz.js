@@ -33,7 +33,7 @@
 
   // Get distances to be used as filter
   const selDistance = document.getElementById( "selDistance" );
-  var stmt = db.prepare("SELECT DISTINCT distance FROM Round");
+  var stmt = db.prepare("SELECT DISTINCT distance FROM Round ORDER BY distance DESC");
   while(stmt.step()) {
     var option = document.createElement("option");
     var opt = stmt.getAsObject();
@@ -391,7 +391,7 @@
         tbody.insertRow(i);
         // insert round data
         let j=0;
-        tbody.rows[i].insertCell(j).innerHTML = '<button onclick="showTrefferBild(['+x+'],['+y+'])">'+Runden[passeCols[j]]+'</button>';
+        tbody.rows[i].insertCell(j).innerHTML = '<button onclick="showTrefferBild(['+x+'],['+y+'],['+r+'])">'+Runden[passeCols[j]]+'</button>';
         for( let j=1; j<(passeCols.length-Runden['Schuss']); j++){
           tbody.rows[i].insertCell(j).innerText = Runden[passeCols[j]];
         }
