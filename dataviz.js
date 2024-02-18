@@ -65,7 +65,7 @@
 
     // Get Training-info => Timeline overview
     var stmt = db.prepare("\
-      SELECT DISTINCT T.id AS TID, date AS D, title AS TT, location AS L, distance, T.reachedPoints AS RP, T.totalPoints AS TP, \
+      SELECT DISTINCT T.id AS TID, date AS D, title AS TT, location AS L, distance, T.reachedPoints AS RP, T.totalPoints AS TP, T.comment AS C, \
         round(((T.reachedPoints*1.0)/(T.totalPoints*1.0)*100)) AS PC, B.name AS bow  \
       FROM Training AS T, Round AS R, Bow AS B \
       WHERE T.id=T.id AND T.id=R.trainingId AND T.bowId=B.id" + fLocation + fDistance + fBow + "\
@@ -75,7 +75,7 @@
     while(stmt.step()) {
       var Trainings = stmt.getAsObject();
       TLevents.push({
-          'id': Trainings['TID'], 'start': new Date( Trainings['D'] ), 'content': Trainings['TT'], 'title': Trainings['L']+": "+Trainings['RP']+" / "+Trainings['TP']+" / "+Trainings['PC']+"%",
+          'id': Trainings['TID'], 'start': new Date( Trainings['D'] ), 'content': Trainings['TT'], 'title': Trainings['L']+": "+Trainings['RP']+" / "+Trainings['TP']+" / "+Trainings['PC']+"%" +"<br>" + Trainings['C']
       });
     }
     var items = new vis.DataSet( TLevents );
