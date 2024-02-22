@@ -8,7 +8,6 @@
 
   // Grab the HTML positioning elements
   const timelineDiv   = document.getElementById( "timeline" );
-  const trainingGraph = document.getElementById( "trainingGraph" );
   const rundenGraph   = document.getElementById( "rundenGraph" );
   const rundenInfo    = document.getElementById( "rundenInfo" );
   const passeInfo     = document.getElementById( "passeInfo" );
@@ -75,21 +74,25 @@
     while(stmt.step()) {
       var Trainings = stmt.getAsObject();
       TLevents.push({
-          'id': Trainings['TID'], 'start': new Date( Trainings['D'] ), 'content': Trainings['TT'], 'title': Trainings['L']+": "+Trainings['RP']+" / "+Trainings['TP']+" / "+Trainings['PC']+"%" +"<br>" + Trainings['C']
+          'id': Trainings['TID'], 'start': new Date( Trainings['D'] ), 'content': Trainings['TT'], 'title': Trainings['D'] +"<br>"+Trainings['L']+": "+Trainings['RP']+" / "+Trainings['TP']+" / "+Trainings['PC']+"%" +"<br>" + Trainings['C']
       });
     }
     var items = new vis.DataSet( TLevents );
   
+    const oneMonth = 1000 * 60 * 60 * 24 * 30;
+    var start = new Date( TLRange['End'] ) - oneMonth;
+//console.log("start: "+ Date(start) );
     // timeline config
     var options = {
       height: '20vH',
       stack: true,
       verticalScroll: true,
       zoomKey: 'ctrlKey',
+      start: start,                             // start with last month
       min: new Date( TLRange['Start'] ),        // lower limit of visible range
       max: new Date( TLRange['End'] ),          // upper limit of visible range
-      zoomMin: 1000 * 60 * 60 * 24,             // one day in milliseconds
-      zoomMax: 1000 * 60 * 60 * 24 * 31 * 3,    // about three months in milliseconds
+      //zoomMin: 1000 * 60 * 60 * 24,             // one day in milliseconds
+      //zoomMax: 1000 * 60 * 60 * 24 * 31 * 3,    // about three months in milliseconds
       tooltip: { followMouse: true },
       selectable: true,
       multiselect: true,
@@ -118,7 +121,6 @@
   
     // timeline event handlers
     timeline.on('select', function(properties) {
-      showTimelineGraph(properties);
       showRundenInfo( properties);
       showPasseInfo( properties);
     });
@@ -132,7 +134,6 @@
     timeline.on('rangechanged', function(properties) {
       var visibleItems = timeline.getVisibleItems();
       timeline.setSelection('');
-      showTimelineGraph( {"items": [ visibleItems ]});
       showRundenInfo( {"items": [ visibleItems ]});
       showPasseInfo( {"items": [ visibleItems ]});
     });
@@ -143,14 +144,12 @@
   selLocation.onchange = function () {
     var visibleItems = TL.getVisibleItems();
     TL=showTimeline('upd');
-    showTimelineGraph( {"items": [ visibleItems ]});
     showRundenInfo( {"items": [ visibleItems ]});
     showPasseInfo( {"items": [ visibleItems ]});
   };
   selDistance.onchange = function () {
     var visibleItems = TL.getVisibleItems();
     TL=showTimeline('upd');
-    showTimelineGraph( {"items": [ visibleItems ]});
     showRundenInfo( {"items": [ visibleItems ]});
     showPasseInfo( {"items": [ visibleItems ]});
   };
@@ -158,83 +157,8 @@
     console.log(this.value);
     var visibleItems = TL.getVisibleItems();
     TL=showTimeline('upd');
-    showTimelineGraph( {"items": [ visibleItems ]});
     showRundenInfo( {"items": [ visibleItems ]});
     showPasseInfo( {"items": [ visibleItems ]});
-  };
-
-  function showTimelineGraph (properties) {
-    const TChartTTafterTitle = (tooltipItems) => {
-      return 'Training (erreicht / max / Prozent): ';
-    }
-
-    const TChartTTlabel = (tooltipItems) => {
-      return TLdata[tooltipItems.dataIndex].points + ' / ' + TLdata[tooltipItems.dataIndex].max + ' / ' + TLdata[tooltipItems.dataIndex].percent + '%';
-    }
-  
-    const TChartTTfooter = (tooltipItems) => {
-      let sumPoints = 0;
-      let sumMax = 0;
-      let sumPercent = 0;
-      for( let i=0; i< TLdata.length; i++) {
-        sumPoints += TLdata[i].points;
-        sumMax += TLdata[i].max;
-      }
-      sumPercent = (sumPoints/sumMax)*100;
-      return 'Gesamt: ' + sumPoints + ' / ' + sumMax + ' / ' + sumPercent.toFixed(0) + "%";
-    }
-
-    var stmt = db.prepare("\
-      SELECT id, date AS D, reachedPoints AS RP, totalPoints AS TP, \
-        round(((reachedPoints*1.0)/(totalPoints*1.0)*100)) AS PC \
-      FROM Training AS T \
-      WHERE id IN (" + properties.items + ") \
-      ORDER BY date ASC");
-    var TLdata = [];
-    while(stmt.step()) {
-      var Trainings = stmt.getAsObject();
-      TLdata.push({
-        date: Trainings['D'],  percent: Trainings['PC'], points: Trainings['RP'], max: Trainings['TP'],
-      });
-    }
-    if( TrainingChart ){ TrainingChart.destroy(); }
-    TrainingChart = new Chart("trainingGraph", {
-      type: "bar",
-      data: {
-        labels: TLdata.map( row => row.date ),
-        datasets: [{
-          data: TLdata.map( row => row.percent ),
-        }]
-      },
-      options: {
-        interaction: {
-          intersect: false,
-          mode: 'index',
-        },
-        plugins: {
-          legend: {display: false},
-          tooltip: {
-            callbacks: {
-              afterTitle: TChartTTafterTitle,
-              label: TChartTTlabel,
-              footer: TChartTTfooter,
-            },
-          },
-          title: {
-            display: true,
-            text: "Trainings"
-          },
-        },
-        scales: {
-          x: {
-          },
-          y: {
-            min: 0,
-            max: 100,
-          }
-        }
-      }
-    });
   };
 
   function showRundenInfo (properties) {
