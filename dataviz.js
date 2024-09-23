@@ -40,6 +40,17 @@
     selDistance.add(option); 
   }
 
+  // Get targets to be used as filter
+  const selTarget = document.getElementById( "selTarget" );
+  var stmt = db.prepare("SELECT DISTINCT targetDiameter FROM Round ORDER BY cast(targetDiameter as unsigned) ASC");
+  while(stmt.step()) {
+    var option = document.createElement("option");
+    var opt = stmt.getAsObject();
+    option.text = opt.targetDiameter;
+console.log(option.text);
+    selTarget.add(option); 
+  }
+
   // Get bows to be used as filter
   const selBow = document.getElementById( "selBow" );
   var stmt = db.prepare("SELECT DISTINCT name FROM Bow");
@@ -58,6 +69,9 @@
     var fDistance="";
     var selDistance = document.getElementById("selDistance").value;
     selDistance == "" ? fDistance="" : fDistance=" AND distance='" + selDistance + "'";
+    var fTarget="";
+    var selTarget = document.getElementById("selTarget").value;
+    selTarget == "" ? fTarget="" : fTarget=" AND targetDiameter='" + selTarget + "'";
     var fBow="";
     var selBow = document.getElementById("selBow").value;
     selBow == "" ? fBow="" : fBow=" AND bow='" + selBow + "'";
@@ -67,7 +81,7 @@
       SELECT DISTINCT T.id AS TID, date AS D, title AS TT, location AS L, distance, T.reachedPoints AS RP, T.totalPoints AS TP, T.comment AS C, \
         round(((T.reachedPoints*1.0)/(T.totalPoints*1.0)*100)) AS PC, B.name AS bow  \
       FROM Training AS T, Round AS R, Bow AS B \
-      WHERE T.id=T.id AND T.id=R.trainingId AND T.bowId=B.id" + fLocation + fDistance + fBow + "\
+      WHERE T.id=T.id AND T.id=R.trainingId AND T.bowId=B.id" + fLocation + fDistance + fTarget + fBow + "\
       GROUP BY T.id \
       ORDER BY date ASC");
     var TLevents=[];
@@ -152,6 +166,14 @@
     showRundenInfo( {"items": [ visibleItems ]});
     showPasseInfo( {"items": [ visibleItems ]});
   };
+  selTarget.onchange = function () {
+    console.log(this.value);
+    var visibleItems = TL.getVisibleItems();
+    TL=showTimeline('upd');
+    showRundenInfo( {"items": [ visibleItems ]});
+    showPasseInfo( {"items": [ visibleItems ]});
+  };
+
   selBow.onchange = function () {
     console.log(this.value);
     var visibleItems = TL.getVisibleItems();
@@ -209,7 +231,7 @@
   
     const RChartTTTitle = (tooltipItems) => {
       //return RDdata[tooltipItems.label] + ': ' + RDdata[tooltipItems.'0'.dataIndex].points + ' / ' + RDdata[tooltipItems.'0'.dataIndex].max + ' / ' + RDdata[tooltipItems.'0'.dataIndex].percent + '%';
-console.log(tooltipItems);
+//console.log(tooltipItems);
       return RDdata[tooltipItems.label];
     }
 
@@ -259,7 +281,6 @@ console.log(tooltipItems);
         },
         onClick: function(c,i) {
           var e = i[0];
-          console.log(e)
           var x_value = this.data.labels[e.index];
           var y_value = this.data.datasets[e.datasetIndex].data[e.index];
           console.log(x_value + ":" + y_value + " / " + selLocation + " / " + selDistance);
