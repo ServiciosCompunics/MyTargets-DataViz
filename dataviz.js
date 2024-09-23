@@ -53,14 +53,14 @@
     if( mode=='upd') { TL.destroy(); }
     // optional filters for SQL-timeline
     var fLocation="";
-    var selected = document.getElementById("selLocation").value;
-    selected == "" ? fLocation="" : fLocation=" AND location='" + selected + "'";
+    var selLocation = document.getElementById("selLocation").value;
+    selLocation == "" ? fLocation="" : fLocation=" AND location='" + selLocation + "'";
     var fDistance="";
-    var selected = document.getElementById("selDistance").value;
-    selected == "" ? fDistance="" : fDistance=" AND distance='" + selected + "'";
+    var selDistance = document.getElementById("selDistance").value;
+    selDistance == "" ? fDistance="" : fDistance=" AND distance='" + selDistance + "'";
     var fBow="";
-    var selected = document.getElementById("selBow").value;
-    selected == "" ? fBow="" : fBow=" AND bow='" + selected + "'";
+    var selBow = document.getElementById("selBow").value;
+    selBow == "" ? fBow="" : fBow=" AND bow='" + selBow + "'";
 
     // Get Training-info => Timeline overview
     var stmt = db.prepare("\
@@ -74,14 +74,13 @@
     while(stmt.step()) {
       var Trainings = stmt.getAsObject();
       TLevents.push({
-          'id': Trainings['TID'], 'start': new Date( Trainings['D'] ), 'content': Trainings['TT'], 'title': Trainings['D'] +"<br>"+Trainings['L']+": "+Trainings['RP']+" / "+Trainings['TP']+" / "+Trainings['PC']+"%" +"<br>" + Trainings['C']
+          'id': Trainings['TID'], 'start': new Date( Trainings['D'] ), 'content': +Trainings['RP']+" / "+Trainings['TP']+" / "+Trainings['PC']+"%", 'title': Trainings['D'] + ": " + Trainings['L'] +"<br>" + Trainings['C']
       });
     }
     var items = new vis.DataSet( TLevents );
   
     const oneMonth = 1000 * 60 * 60 * 24 * 30;
     var start = new Date( TLRange['End'] ) - oneMonth;
-//console.log("start: "+ Date(start) );
     // timeline config
     var options = {
       height: '20vH',
@@ -91,8 +90,8 @@
       start: start,                             // start with last month
       min: new Date( TLRange['Start'] ),        // lower limit of visible range
       max: new Date( TLRange['End'] ),          // upper limit of visible range
-      //zoomMin: 1000 * 60 * 60 * 24,             // one day in milliseconds
-      //zoomMax: 1000 * 60 * 60 * 24 * 31 * 3,    // about three months in milliseconds
+      zoomMin: 1000 * 60 * 60 * 24,             // one day in milliseconds
+      zoomMax: 1000 * 60 * 60 * 24 * 31 * 3,    // about three months in milliseconds
       tooltip: { followMouse: true },
       selectable: true,
       multiselect: true,
@@ -164,11 +163,11 @@
   function showRundenInfo (properties) {
     rundenInfo.innerHTML = '';
     var fLocation="";
-    var selected = document.getElementById("selLocation").value;
-    selected == "" ? fLocation="" : fLocation=" AND location='" + selected + "'";
+    var selLocation = document.getElementById("selLocation").value;
+    selLocation == "" ? fLocation="" : fLocation=" AND location='" + selLocation + "'";
     var fDistance="";
-    var selected = document.getElementById("selDistance").value;
-    selected == "" ? fDistance="" : fDistance=" AND distance='" + selected + "'";
+    var selDistance = document.getElementById("selDistance").value;
+    selDistance == "" ? fDistance="" : fDistance=" AND distance='" + selDistance + "'";
     var stmt = db.prepare("\
       SELECT T.date AS Datum, distance AS Distanz, R.reachedPoints AS Punkte, \
         R.totalPoints AS Max, round(((R.reachedPoints*1.0)/(R.totalPoints*1.0)*100)) AS Prozent \
@@ -204,14 +203,17 @@
     rundenInfo.appendChild(rundenTable);
 
     const RChartTTlabel = (tooltipItems) => {
+//console.log(tooltipItems);
       return RDdata[tooltipItems.dataIndex].points + ' / ' + RDdata[tooltipItems.dataIndex].max + ' / ' + RDdata[tooltipItems.dataIndex].percent + '%';
     }
   
-    const RChartTTafterTitle = (tooltipItems) => {
-      return 'Runde (erreicht / max / Prozent): ';
+    const RChartTTTitle = (tooltipItems) => {
+      //return RDdata[tooltipItems.label] + ': ' + RDdata[tooltipItems.'0'.dataIndex].points + ' / ' + RDdata[tooltipItems.'0'.dataIndex].max + ' / ' + RDdata[tooltipItems.'0'.dataIndex].percent + '%';
+console.log(tooltipItems);
+      return RDdata[tooltipItems.label];
     }
 
-    const RChartTTfooter = (tooltipItems) => {
+    const RChartTTafterTitle = (tooltipItems) => {
       let sumPoints = 0;
       let sumMax = 0;
       let sumPercent = 0;
@@ -220,7 +222,7 @@
         sumMax += RDdata[i].max;
       }
       sumPercent = (sumPoints/sumMax)*100;
-      return 'Gesamt: ' + sumPoints + ' / ' + sumMax + ' / ' + sumPercent.toFixed(0) + "%";
+      return selLocation + " " + selDistance + " " + sumPoints + ' / ' + sumMax + ' / ' + sumPercent.toFixed(0) + "%";
     }
 
     if( RundenChart ){ RundenChart.destroy(); }
@@ -237,9 +239,9 @@
         legend: {display: false},
           tooltip: {
             callbacks: {
+              title: RChartTTTitle,
               afterTitle: RChartTTafterTitle,
               label: RChartTTlabel,
-              footer: RChartTTfooter,
             },
           },
           title: {
@@ -254,6 +256,13 @@
             min: 0,
             max: 100,
           }
+        },
+        onClick: function(c,i) {
+          var e = i[0];
+          console.log(e)
+          var x_value = this.data.labels[e.index];
+          var y_value = this.data.datasets[e.datasetIndex].data[e.index];
+          console.log(x_value + ":" + y_value + " / " + selLocation + " / " + selDistance);
         }
       }
     });
@@ -315,7 +324,8 @@
         tbody.insertRow(i);
         // insert round data
         let j=0;
-        tbody.rows[i].insertCell(j).innerHTML = '<button onclick="showTrefferBild(['+x+'],['+y+'],['+r+'])">'+Runden[passeCols[j]]+'</button>';
+        //tbody.rows[i].insertCell(j).innerHTML = '<button onclick="showTrefferBild(['+x+'],['+y+'],['+r+'])">'+Runden[passeCols[j]]+'</button>';
+        tbody.rows[i].insertCell(j).innerHTML = '<button onmouseover="showTrefferBild(['+x+'],['+y+'],['+r+'])">'+Runden[passeCols[j]]+'</button>';
         for( let j=1; j<(passeCols.length-Runden['Schuss']); j++){
           tbody.rows[i].insertCell(j).innerText = Runden[passeCols[j]];
         }
