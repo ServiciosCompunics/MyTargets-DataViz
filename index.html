@@ -50,23 +50,25 @@
         };
 
         // draw TrefferBild Chart
-        var TrefferWindow = window.open("", "", "toolbar=no,scrollbars=yes,resizable=no,top=400px,left=800px,width=600px,height=600px"); 
-        if( TrefferChart ){ TrefferChart.destroy(); }
-        var TrefferCanvas = TrefferWindow.document.createElement("canvas");
-        TrefferCanvas.id = "TrefferCanvasId";
-        TrefferCanvas.width = 600;
-        TrefferCanvas.height = 600;
-        TrefferCanvas.style.backgroundImage = "url(./img/fita-40-600x600.png)";
-        TrefferCanvas.style.backgroundRepeat = "no-repeat";
-        TrefferCanvas.style.backgroundPosition = "center";
-        TrefferCanvas.style.backgroundSize = "contain";
-        TrefferCanvas.style.zIndex = 1000;
-        TrefferCanvas.style.position = "absolute";
-        TrefferCanvas.style.margin = "0px";
-        TrefferCanvas.style.border = "0px";
-        TrefferCanvas.style.adding = "0px";
-        var TrefferBody = TrefferWindow.document.getElementsByTagName("body")[0];
-        TrefferBody.appendChild(TrefferCanvas);
+        if( typeof TrefferWindow === 'undefined' ) {
+	  TrefferWindow = window.open("", "Treffer", "toolbar=no,scrollbars=no,resizable=no,top=400px,left=800px,width=600px,height=600px"); 
+          TrefferCanvas = TrefferWindow.document.createElement("canvas");
+          TrefferCanvas.id = "TrefferCanvasId";
+          TrefferCanvas.width = 600;
+          TrefferCanvas.height = 600;
+          TrefferCanvas.style.backgroundImage = "url(./img/fita-40-600x600.png)";
+          TrefferCanvas.style.backgroundRepeat = "no-repeat";
+          TrefferCanvas.style.backgroundPosition = "center";
+          TrefferCanvas.style.backgroundSize = "contain";
+          TrefferCanvas.style.zIndex = 1000;
+          TrefferCanvas.style.position = "absolute";
+          TrefferCanvas.style.margin = "0px";
+          TrefferCanvas.style.border = "0px";
+          TrefferCanvas.style.adding = "0px";
+	  TrefferWindow.document.body.appendChild(TrefferCanvas);
+	} else {
+	  TrefferChart.destroy();
+	}
         TrefferChart = new Chart( TrefferWindow.document.getElementById('TrefferCanvasId'), config );
       };
     </script>
