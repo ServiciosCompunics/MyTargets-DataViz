@@ -2,6 +2,7 @@
 <html>
   <head>
     <link  href="./dist/vis-timeline-graph2d.min.css" rel="stylesheet" type="text/css" />
+    <script src="./dist/moment-with-locales.min.js"> </script>
     <script src="./dist/sql-wasm.js"></script>
     <script src="./dist/vis.min.js"></script>
     <script src="./dist/jquery.min.js"> </script>
@@ -160,14 +161,14 @@
     <div id="menu">
       <input type="button" id="zoomIn"       value="Zoom in >"/>
       <input type="button" id="zoomInMax"    value=">>"/>
-      <input type="button" id="zoomOut"      value="Zoom out <"/>
       <input type="button" id="zoomOutMax"   value="<<"/>
+      <input type="button" id="zoomOut"      value="Zoom out <"/>
       <input type="button" id="moveLeftX"    value="Zur&uuml;ck <"/>
       <input type="button" id="moveLeftXL"   value="<<"/>
-      <input type="button" id="moveLeftMax"  value="<<|"/>
-      <input type="button" id="moveRightX"   value="Vorw&auml;rts >"/>
-      <input type="button" id="moveRightXL"  value=">>"/>
+      <input type="button" id="moveLeftMax"  value="|<<"/>
       <input type="button" id="moveRightMax" value=">>|"/>
+      <input type="button" id="moveRightXL"  value=">>"/>
+      <input type="button" id="moveRightX"   value="Vorw&auml;rts >"/>
       <select id="selLocation">   <option value="">Ort</option></select>
       <select id="selDistance">   <option value="">Distanz</option></select>
       <select id="selTarget">     <option value="">Scheibe</option></select>

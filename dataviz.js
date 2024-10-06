@@ -96,6 +96,7 @@
     var start = new Date( TLRange['End'] ) - oneMonth;
     // timeline config
     var options = {
+      locale: 'de',
       height: '20vH',
       stack: true,
       verticalScroll: true,
