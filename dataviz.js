@@ -128,8 +128,14 @@
     // attach events to the navigation buttons
     document.getElementById('zoomIn').onclick    = function () { timeline.zoomIn( 0.2); };
     document.getElementById('zoomOut').onclick   = function () { timeline.zoomOut( 0.2); };
-    document.getElementById('moveLeft').onclick  = function () { move( 0.2); };
-    document.getElementById('moveRight').onclick = function () { move(-0.2); };
+    document.getElementById('zoomInMax').onclick = function () { timeline.zoomIn( 1.0 ); };
+    document.getElementById('zoomOutMax').onclick= function () { timeline.zoomOut( 1.0 ); };
+    document.getElementById('moveLeftX').onclick = function () { move( 0.2); };
+    document.getElementById('moveLeftXL').onclick = function () { move( 1.0); };
+    document.getElementById('moveLeftMax').onclick  = function () { timeline.moveTo( TLRange['Start'] ); };
+    document.getElementById('moveRightX').onclick = function () { move(-0.2); };
+    document.getElementById('moveRightXL').onclick = function () { move(-1.0); };
+    document.getElementById('moveRightMax').onclick = function () { timeline.moveTo( TLRange['End'] ); };
   
     // timeline event handlers
     timeline.on('select', function(properties) {
