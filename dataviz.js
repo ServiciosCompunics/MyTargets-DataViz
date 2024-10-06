@@ -47,7 +47,6 @@
     var option = document.createElement("option");
     var opt = stmt.getAsObject();
     option.text = opt.targetDiameter;
-console.log(option.text);
     selTarget.add(option); 
   }
 
@@ -167,7 +166,6 @@ console.log(option.text);
     showPasseInfo( {"items": [ visibleItems ]});
   };
   selTarget.onchange = function () {
-    console.log(this.value);
     var visibleItems = TL.getVisibleItems();
     TL=showTimeline('upd');
     showRundenInfo( {"items": [ visibleItems ]});
@@ -175,7 +173,6 @@ console.log(option.text);
   };
 
   selBow.onchange = function () {
-    console.log(this.value);
     var visibleItems = TL.getVisibleItems();
     TL=showTimeline('upd');
     showRundenInfo( {"items": [ visibleItems ]});
@@ -229,10 +226,9 @@ console.log(option.text);
       return RDdata[tooltipItems.dataIndex].points + ' / ' + RDdata[tooltipItems.dataIndex].max + ' / ' + RDdata[tooltipItems.dataIndex].percent + '%';
     }
   
-    const RChartTTTitle = (tooltipItems) => {
-      //return RDdata[tooltipItems.label] + ': ' + RDdata[tooltipItems.'0'.dataIndex].points + ' / ' + RDdata[tooltipItems.'0'.dataIndex].max + ' / ' + RDdata[tooltipItems.'0'.dataIndex].percent + '%';
-//console.log(tooltipItems);
-      return RDdata[tooltipItems.label];
+    const RChartTTtitle = (tooltipItems) => {
+//console.log(tooltipItems[0]);
+      return RDdata[tooltipItems[0].label];
     }
 
     const RChartTTafterTitle = (tooltipItems) => {
@@ -254,14 +250,16 @@ console.log(option.text);
         labels: RDdata.map( row => row.date ),
         datasets: [{
           data: RDdata.map( row => row.percent ),
+	  hoverBackgroundColor: 'rgba(0,0,0,0.1)',
         }]
       },
       options: {
+	indexAxis: 'y',
         plugins: {
         legend: {display: false},
           tooltip: {
             callbacks: {
-              title: RChartTTTitle,
+              title: RChartTTtitle,
               afterTitle: RChartTTafterTitle,
               label: RChartTTlabel,
             },
@@ -346,7 +344,8 @@ console.log(option.text);
         // insert round data
         let j=0;
         //tbody.rows[i].insertCell(j).innerHTML = '<button onclick="showTrefferBild(['+x+'],['+y+'],['+r+'])">'+Runden[passeCols[j]]+'</button>';
-        tbody.rows[i].insertCell(j).innerHTML = '<button onmouseover="showTrefferBild(['+x+'],['+y+'],['+r+'])">'+Runden[passeCols[j]]+'</button>';
+        //tbody.rows[i].insertCell(j).innerHTML = '<button onmouseover="showTrefferBild(['+x+'],['+y+'],['+r+'])">'+Runden[passeCols[j]]+'</button>';
+        tbody.rows[i].insertCell(j).innerHTML = '<button onmouseover="showTrefferBild(['+x+'],['+y+'],['+r+'])" onmouseout="closeTrefferBild();">'+Runden[passeCols[j]]+'</button>';
         for( let j=1; j<(passeCols.length-Runden['Schuss']); j++){
           tbody.rows[i].insertCell(j).innerText = Runden[passeCols[j]];
         }

@@ -13,6 +13,13 @@
         if( score < 3 || score > 8) return 'rgba(0,0,0,1.0)';
         return 'rgba(255,255,255,1.0)';
       };
+      function closeTrefferBild(){
+	console.log("closing..");
+	TrefferChart.destroy();
+	//TrefferWindow.close();
+	//TrefferWindow = undefined;
+	return;
+      };
       function showTrefferBild(x,y,r) {
         var schuss = [];
         var scolor = [];
@@ -52,6 +59,7 @@
         // draw TrefferBild Chart
         if( typeof TrefferWindow === 'undefined' ) {
 	  TrefferWindow = window.open("", "Treffer", "toolbar=no,scrollbars=no,resizable=no,top=400px,left=800px,width=600px,height=600px"); 
+	  //TrefferWindow.document.body.addEventListener("unload", closeTrefferBild);
           TrefferCanvas = TrefferWindow.document.createElement("canvas");
           TrefferCanvas.id = "TrefferCanvasId";
           TrefferCanvas.width = 600;
