@@ -104,8 +104,8 @@
       start: start,                             // start with last month
       min: new Date( TLRange['Start'] ),        // lower limit of visible range
       max: new Date( TLRange['End'] ),          // upper limit of visible range
-      zoomMin: 1000 * 60 * 60 * 24,             // one day in milliseconds
-      zoomMax: 1000 * 60 * 60 * 24 * 31 * 3,    // about three months in milliseconds
+      //zoomMin: 1000 * 60 * 60 * 24,             // one day in milliseconds
+      //zoomMax: 1000 * 60 * 60 * 24 * 31 * 3,    // about three months in milliseconds
       tooltip: { followMouse: true },
       selectable: true,
       multiselect: true,
