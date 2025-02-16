@@ -60,7 +60,6 @@
         // draw TrefferBild Chart
         if( typeof TrefferWindow === 'undefined' ) {
 	  TrefferWindow = window.open("", "Treffer", "toolbar=no,scrollbars=no,resizable=no,top=400px,left=800px,width=600px,height=600px"); 
-	  //TrefferWindow.document.body.addEventListener("unload", closeTrefferBild);
           TrefferCanvas = TrefferWindow.document.createElement("canvas");
           TrefferCanvas.id = "TrefferCanvasId";
           TrefferCanvas.width = 600;
@@ -97,7 +96,10 @@
        height: 25vH;
      }
      /* gray background on weekends */
-     .vis-saturday, .vis-sunday {
+     .vis-saturday {
+       background: darkgray;
+     }
+     .vis-sunday {
        background: gray;
      }
 
