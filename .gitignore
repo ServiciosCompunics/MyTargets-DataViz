@@ -3,5 +3,4 @@ tmp/
 *.swp
 *.bak
 data.db
-favicon.ico
 RSYNC
