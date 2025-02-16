@@ -104,8 +104,6 @@
       start: start,                             // start with last month
       min: new Date( TLRange['Start'] ),        // lower limit of visible range
       max: new Date( TLRange['End'] ),          // upper limit of visible range
-      //zoomMin: 1000 * 60 * 60 * 24,             // one day in milliseconds
-      //zoomMax: 1000 * 60 * 60 * 24 * 31 * 3,    // about three months in milliseconds
       tooltip: { followMouse: true },
       selectable: true,
       multiselect: true,
@@ -142,13 +140,6 @@
     timeline.on('select', function(properties) {
       showRundenInfo( properties);
       showPasseInfo( properties);
-    });
-    timeline.on('doubleClick', function(properties) {
-      console.log("event: doubelClick");
-    });
-    timeline.on('contextmenu', function(properties) {
-      console.log(properties);
-      event.preventDefault();
     });
     timeline.on('rangechanged', function(properties) {
       var visibleItems = timeline.getVisibleItems();
@@ -229,12 +220,10 @@
     rundenInfo.appendChild(rundenTable);
 
     const RChartTTlabel = (tooltipItems) => {
-//console.log(tooltipItems);
       return RDdata[tooltipItems.dataIndex].points + ' / ' + RDdata[tooltipItems.dataIndex].max + ' / ' + RDdata[tooltipItems.dataIndex].percent + '%';
     }
   
     const RChartTTtitle = (tooltipItems) => {
-//console.log(tooltipItems[0]);
       return RDdata[tooltipItems[0].label];
     }
 
@@ -261,7 +250,6 @@
         }]
       },
       options: {
-	indexAxis: 'y',
         plugins: {
         legend: {display: false},
           tooltip: {
@@ -280,7 +268,7 @@
           x: {
           },
           y: {
-            min: 0,
+            min: 20,
             max: 100,
           }
         },
@@ -288,7 +276,9 @@
           var e = i[0];
           var x_value = this.data.labels[e.index];
           var y_value = this.data.datasets[e.datasetIndex].data[e.index];
-          console.log(x_value + ":" + y_value + " / " + selLocation + " / " + selDistance);
+          console.log("x:" + x_value + " y:" + y_value + " / " + "loc:" + selLocation + " dist:" + selDistance);
+          //var str = JSON.stringify(this.data.datasets);
+          //console.log("datasets: " + str);
         }
       }
     });
@@ -350,8 +340,6 @@
         tbody.insertRow(i);
         // insert round data
         let j=0;
-        //tbody.rows[i].insertCell(j).innerHTML = '<button onclick="showTrefferBild(['+x+'],['+y+'],['+r+'])">'+Runden[passeCols[j]]+'</button>';
-        //tbody.rows[i].insertCell(j).innerHTML = '<button onmouseover="showTrefferBild(['+x+'],['+y+'],['+r+'])">'+Runden[passeCols[j]]+'</button>';
         tbody.rows[i].insertCell(j).innerHTML = '<button onmouseover="showTrefferBild(['+x+'],['+y+'],['+r+'])" onmouseout="closeTrefferBild();">'+Runden[passeCols[j]]+'</button>';
         for( let j=1; j<(passeCols.length-Runden['Schuss']); j++){
           tbody.rows[i].insertCell(j).innerText = Runden[passeCols[j]];
