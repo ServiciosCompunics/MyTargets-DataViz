@@ -245,11 +245,14 @@
       data: {
         labels: RDdata.map( row => row.date ),
         datasets: [{
+          barPercentage: 0.9,
+          categoryPercentage: 1.0,
           data: RDdata.map( row => row.percent ),
 	  hoverBackgroundColor: 'rgba(0,0,0,0.1)',
         }]
       },
       options: {
+        maintainAspectRatio: false,
         plugins: {
         legend: {display: false},
           tooltip: {
