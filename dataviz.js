@@ -185,7 +185,7 @@
     var selDistance = document.getElementById("selDistance").value;
     selDistance == "" ? fDistance="" : fDistance=" AND distance='" + selDistance + "'";
     var stmt = db.prepare("\
-      SELECT T.id AS TID, R.id AS RID, T.date AS Datum, distance AS Distanz, R.reachedPoints AS Punkte, \
+      SELECT T.id AS TID, R.id AS RID, T.location AS Ort, T.date AS Datum, distance AS Distanz, R.reachedPoints AS Punkte, \
         R.totalPoints AS Max, round(((R.reachedPoints*1.0)/(R.totalPoints*1.0)*100)) AS Prozent \
       FROM Round AS R, Training AS T \
       WHERE R.trainingId = T.id AND R.trainingId IN (" + properties.items + ")" + fDistance + fLocation + "\
@@ -196,7 +196,7 @@
     const thead = rundenTable.createTHead();
     thead.classList.add('ChartTableHead');
     thead.insertRow(0);
-    const rundenCols = [ 'Datum', 'Distanz', 'Punkte', 'Max', 'Prozent' ];
+    const rundenCols = [ 'Datum', 'Ort', 'Distanz', 'Punkte', 'Max', 'Prozent' ];
     for( let i=0; i< rundenCols.length; i++){
       thead.rows[0].insertCell(i).innerText = rundenCols[i];
     };
@@ -207,9 +207,9 @@
     var RDdata = [];
     while(stmt.step()) {
       var Runden = stmt.getAsObject();
-//console.log("R: %o", Runden);
+console.log("R: %o", Runden);
       RDdata.push({
-        date: Runden['Datum'], tid: Runden['TID'], rid: Runden['RID'], points: Runden['Punkte'], max: Runden['Max'], percent: Runden['Prozent'],
+        date: Runden['Datum'], tid: Runden['TID'], loc: Runden['Ort'], rid: Runden['RID'], dist: Runden['Distanz'], points: Runden['Punkte'], max: Runden['Max'], percent: Runden['Prozent'],
       });
       tbody.insertRow(i);
       for( let j=0; j< rundenCols.length; j++){
@@ -220,7 +220,7 @@
     rundenInfo.appendChild(rundenTable);
 
     const RChartTTlabel = (tooltipItems) => {
-      return RDdata[tooltipItems.dataIndex].points + ' / ' + RDdata[tooltipItems.dataIndex].max + ' / ' + RDdata[tooltipItems.dataIndex].percent + '%';
+      return RDdata[tooltipItems.dataIndex].loc + ' (' + RDdata[tooltipItems.dataIndex].dist + '): ' + RDdata[tooltipItems.dataIndex].points + ' von ' + RDdata[tooltipItems.dataIndex].max + ' = ' + RDdata[tooltipItems.dataIndex].percent + '%';
     }
   
     const RChartTTtitle = (tooltipItems) => {
@@ -258,7 +258,7 @@
           tooltip: {
             callbacks: {
               title: RChartTTtitle,
-              afterTitle: RChartTTafterTitle,
+              //afterTitle: RChartTTafterTitle,
               label: RChartTTlabel,
             },
           },
@@ -294,7 +294,7 @@
     var selected = document.getElementById("selDistance").value;
     selected == "" ? fDistance="" : fDistance=" AND distance='" + selected + "'";
     var stmt = db.prepare("\
-      SELECT T.date AS Datum, distance AS Distanz, E.reachedPoints AS Punkte, \
+      SELECT T.date AS Datum, T.location AS Ort, distance AS Distanz, E.reachedPoints AS Punkte, \
         E.totalPoints AS Max, round(((E.reachedPoints*1.0)/(E.totalPoints*1.0)*100)) AS Prozent, E.shotCount AS Schuss, \
         S.scoringRing AS Ring, round(S.x,2) AS xPos, round(S.y,2) AS yPos \
       FROM Shot AS S, End AS E, Round AS R, Training AS T \
@@ -307,7 +307,7 @@
     const thead = passeTable.createTHead();
     thead.classList.add('ChartTableHead');
     thead.insertRow(0);
-    const passeCols = [ 'Datum', 'Distanz', 'Punkte', 'Max', 'Prozent', 'Schuss', '1', '2', '3', '4', '5', '6' ];
+    const passeCols = [ 'Datum', 'Ort', 'Distanz', 'Punkte', 'Max', 'Prozent', 'Schuss', '1', '2', '3', '4', '5', '6' ];
     for( let i=0; i< passeCols.length; i++){
       thead.rows[0].insertCell(i).innerText = passeCols[i];
     };
@@ -319,13 +319,9 @@
     let r=[];
     let x=[];
     let y=[];
-    var RDdata = [];
     while(stmt.step()) {
       var Runden = stmt.getAsObject();
       // prepare Graph
-      RDdata.push({
-        date: Runden['Datum'], points: Runden['Punkte'], max: Runden['Max'], percent: Runden['Prozent'],
-      });
 
       // fill table body..
       if( c < Runden['Schuss']-1) {
