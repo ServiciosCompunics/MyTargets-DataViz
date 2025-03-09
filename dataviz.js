@@ -139,13 +139,13 @@
     // timeline event handlers
     timeline.on('select', function(properties) {
       showRundenInfo( properties);
-      showPasseInfo( properties);
+      showPasseInfo( 0 );
     });
     timeline.on('rangechanged', function(properties) {
       var visibleItems = timeline.getVisibleItems();
       timeline.setSelection('');
       showRundenInfo( {"items": [ visibleItems ]});
-      showPasseInfo( {"items": [ visibleItems ]});
+      showPasseInfo( 0 );
     });
     return timeline;
   };
@@ -155,26 +155,25 @@
     var visibleItems = TL.getVisibleItems();
     TL=showTimeline('upd');
     showRundenInfo( {"items": [ visibleItems ]});
-    showPasseInfo( {"items": [ visibleItems ]});
+    //showPasseInfo( {"items": [ visibleItems ]});
   };
   selDistance.onchange = function () {
     var visibleItems = TL.getVisibleItems();
     TL=showTimeline('upd');
     showRundenInfo( {"items": [ visibleItems ]});
-    showPasseInfo( {"items": [ visibleItems ]});
+    //showPasseInfo( {"items": [ visibleItems ]});
   };
   selTarget.onchange = function () {
     var visibleItems = TL.getVisibleItems();
     TL=showTimeline('upd');
     showRundenInfo( {"items": [ visibleItems ]});
-    showPasseInfo( {"items": [ visibleItems ]});
+    //showPasseInfo( {"items": [ visibleItems ]});
   };
-
   selBow.onchange = function () {
     var visibleItems = TL.getVisibleItems();
     TL=showTimeline('upd');
     showRundenInfo( {"items": [ visibleItems ]});
-    showPasseInfo( {"items": [ visibleItems ]});
+    //showPasseInfo( {"items": [ visibleItems ]});
   };
 
   function showRundenInfo (properties) {
@@ -186,7 +185,7 @@
     var selDistance = document.getElementById("selDistance").value;
     selDistance == "" ? fDistance="" : fDistance=" AND distance='" + selDistance + "'";
     var stmt = db.prepare("\
-      SELECT T.date AS Datum, distance AS Distanz, R.reachedPoints AS Punkte, \
+      SELECT T.id AS TID, R.id AS RID, T.date AS Datum, distance AS Distanz, R.reachedPoints AS Punkte, \
         R.totalPoints AS Max, round(((R.reachedPoints*1.0)/(R.totalPoints*1.0)*100)) AS Prozent \
       FROM Round AS R, Training AS T \
       WHERE R.trainingId = T.id AND R.trainingId IN (" + properties.items + ")" + fDistance + fLocation + "\
@@ -208,8 +207,9 @@
     var RDdata = [];
     while(stmt.step()) {
       var Runden = stmt.getAsObject();
+//console.log("R: %o", Runden);
       RDdata.push({
-        date: Runden['Datum'], points: Runden['Punkte'], max: Runden['Max'], percent: Runden['Prozent'],
+        date: Runden['Datum'], tid: Runden['TID'], rid: Runden['RID'], points: Runden['Punkte'], max: Runden['Max'], percent: Runden['Prozent'],
       });
       tbody.insertRow(i);
       for( let j=0; j< rundenCols.length; j++){
@@ -279,9 +279,7 @@
           var e = i[0];
           var x_value = this.data.labels[e.index];
           var y_value = this.data.datasets[e.datasetIndex].data[e.index];
-          console.log("x:" + x_value + " y:" + y_value + " / " + "loc:" + selLocation + " dist:" + selDistance);
-          //var str = JSON.stringify(this.data.datasets);
-          //console.log("datasets: " + str);
+          showPasseInfo( RDdata[e.index].rid );
         }
       }
     });
@@ -300,7 +298,7 @@
         E.totalPoints AS Max, round(((E.reachedPoints*1.0)/(E.totalPoints*1.0)*100)) AS Prozent, E.shotCount AS Schuss, \
         S.scoringRing AS Ring, round(S.x,2) AS xPos, round(S.y,2) AS yPos \
       FROM Shot AS S, End AS E, Round AS R, Training AS T \
-      WHERE S.endId=E.id AND E.roundId = R.id AND R.trainingId = T.id AND R.trainingId IN (" + properties.items + ")" + fDistance + fLocation + "\
+      WHERE S.endId=E.id AND E.roundId = R.id AND R.trainingId = T.id AND R.id IN (" + properties + ")" + fDistance + fLocation + "\
       GROUP BY S.id, E.id, R.id \
       ORDER BY date ASC");
 
@@ -359,7 +357,9 @@
         c=0;
       }
     }
-    passeInfo.appendChild(passeTable);
+    if( properties > 0){
+      passeInfo.appendChild(passeTable);
+    }
   };
 
   // now show the Timeline Overview
