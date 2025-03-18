@@ -184,11 +184,14 @@
     var fDistance="";
     var selDistance = document.getElementById("selDistance").value;
     selDistance == "" ? fDistance="" : fDistance=" AND distance='" + selDistance + "'";
+    var fTarget="";
+    var selTarget = document.getElementById("selTarget").value;
+    selTarget == "" ? fTarget="" : fTarget=" AND targetDiameter='" + selTarget + "'";
     var stmt = db.prepare("\
       SELECT T.id AS TID, R.id AS RID, T.location AS Ort, T.date AS Datum, distance AS Distanz, R.reachedPoints AS Punkte, \
         R.totalPoints AS Max, round(((R.reachedPoints*1.0)/(R.totalPoints*1.0)*100)) AS Prozent \
       FROM Round AS R, Training AS T \
-      WHERE R.trainingId = T.id AND R.trainingId IN (" + properties.items + ")" + fDistance + fLocation + "\
+      WHERE R.trainingId = T.id AND R.trainingId IN (" + properties.items + ")" + fDistance + fTarget + fLocation + "\
       GROUP BY R.id \
       ORDER BY date ASC");
     const rundenTable = document.createElement("TABLE");
@@ -293,12 +296,15 @@ console.log("R: %o", Runden);
     var fDistance="";
     var selected = document.getElementById("selDistance").value;
     selected == "" ? fDistance="" : fDistance=" AND distance='" + selected + "'";
+    var fTarget="";
+    var selTarget = document.getElementById("selTarget").value;
+    selTarget == "" ? fTarget="" : fTarget=" AND targetDiameter='" + selTarget + "'";
     var stmt = db.prepare("\
       SELECT T.date AS Datum, T.location AS Ort, distance AS Distanz, E.reachedPoints AS Punkte, \
         E.totalPoints AS Max, round(((E.reachedPoints*1.0)/(E.totalPoints*1.0)*100)) AS Prozent, E.shotCount AS Schuss, \
         S.scoringRing AS Ring, round(S.x,2) AS xPos, round(S.y,2) AS yPos \
       FROM Shot AS S, End AS E, Round AS R, Training AS T \
-      WHERE S.endId=E.id AND E.roundId = R.id AND R.trainingId = T.id AND R.id IN (" + properties + ")" + fDistance + fLocation + "\
+      WHERE S.endId=E.id AND E.roundId = R.id AND R.trainingId = T.id AND R.id IN (" + properties + ")" + fDistance + fTarget + fLocation + "\
       GROUP BY S.id, E.id, R.id \
       ORDER BY date ASC");
 
@@ -337,6 +343,7 @@ console.log("R: %o", Runden);
         tbody.insertRow(i);
         // insert round data
         let j=0;
+        let n=0;
         tbody.rows[i].insertCell(j).innerHTML = '<button onmouseover="showTrefferBild(['+x+'],['+y+'],['+r+'])" onmouseout="closeTrefferBild();">'+Runden[passeCols[j]]+'</button>';
         for( let j=1; j<(passeCols.length-Runden['Schuss']); j++){
           tbody.rows[i].insertCell(j).innerText = Runden[passeCols[j]];
