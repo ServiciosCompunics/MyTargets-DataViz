@@ -210,7 +210,6 @@
     var RDdata = [];
     while(stmt.step()) {
       var Runden = stmt.getAsObject();
-console.log("R: %o", Runden);
       RDdata.push({
         date: Runden['Datum'], tid: Runden['TID'], loc: Runden['Ort'], rid: Runden['RID'], dist: Runden['Distanz'], points: Runden['Punkte'], max: Runden['Max'], percent: Runden['Prozent'],
       });
@@ -223,7 +222,7 @@ console.log("R: %o", Runden);
     rundenInfo.appendChild(rundenTable);
 
     const RChartTTlabel = (tooltipItems) => {
-      return RDdata[tooltipItems.dataIndex].loc + ' (' + RDdata[tooltipItems.dataIndex].dist + '): ' + RDdata[tooltipItems.dataIndex].points + ' von ' + RDdata[tooltipItems.dataIndex].max + ' = ' + RDdata[tooltipItems.dataIndex].percent + '%';
+      return RDdata[tooltipItems.dataIndex].percent + '% (' + RDdata[tooltipItems.dataIndex].points + ' von ' + RDdata[tooltipItems.dataIndex].max + ') ' + RDdata[tooltipItems.dataIndex].dist + ' ' + RDdata[tooltipItems.dataIndex].loc;
     }
   
     const RChartTTtitle = (tooltipItems) => {
@@ -239,7 +238,7 @@ console.log("R: %o", Runden);
         sumMax += RDdata[i].max;
       }
       sumPercent = (sumPoints/sumMax)*100;
-      return selLocation + " " + selDistance + " " + sumPoints + ' / ' + sumMax + ' / ' + sumPercent.toFixed(0) + "%";
+      return 'Alle Runden: ' + sumPercent.toFixed(0) + "% (" + sumPoints + ' von ' + sumMax + ") " + selDistance + " " + selLocation;
     }
 
     if( RundenChart ){ RundenChart.destroy(); }
@@ -261,7 +260,7 @@ console.log("R: %o", Runden);
           tooltip: {
             callbacks: {
               title: RChartTTtitle,
-              //afterTitle: RChartTTafterTitle,
+              afterTitle: RChartTTafterTitle,
               label: RChartTTlabel,
             },
           },
@@ -278,10 +277,14 @@ console.log("R: %o", Runden);
             max: 100,
           }
         },
+        //onHover: function(c,i) {
+          //var e = i[0];
+          //var x_value = this.data.labels[e.index];
+          //var y_value = this.data.datasets[e.datasetIndex].data[e.index];
+          //console.log("x=" + x_value + " y=" + y_value);
+        //},
         onClick: function(c,i) {
           var e = i[0];
-          var x_value = this.data.labels[e.index];
-          var y_value = this.data.datasets[e.datasetIndex].data[e.index];
           showPasseInfo( RDdata[e.index].rid );
         }
       }
