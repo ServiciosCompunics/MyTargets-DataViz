@@ -229,7 +229,7 @@
       return RDdata[tooltipItems[0].label];
     }
 
-    const RChartTTafterTitle = (tooltipItems) => {
+    const RChartTTafterBody = (tooltipItems) => {
       let sumPoints = 0;
       let sumMax = 0;
       let sumPercent = 0;
@@ -260,8 +260,8 @@
           tooltip: {
             callbacks: {
               title: RChartTTtitle,
-              afterTitle: RChartTTafterTitle,
               label: RChartTTlabel,
+              afterBody: RChartTTafterBody,
             },
           },
           title: {
