@@ -347,7 +347,8 @@
         // insert round data
         let j=0;
         let n=0;
-        tbody.rows[i].insertCell(j).innerHTML = '<button onmouseover="showTrefferBild(['+x+'],['+y+'],['+r+'])" onmouseout="closeTrefferBild();">'+Runden[passeCols[j]]+'</button>';
+        tbody.rows[i].insertCell(j).innerHTML = '<button onmouseover="showTrefferBild(['+x+'],['+y+'],['+r+'])">'+Runden[passeCols[j]]+'</button>';
+        //tbody.rows[i].insertCell(j).innerHTML = '<button onclick="showTrefferBild(['+x+'],['+y+'],['+r+'])">'+Runden[passeCols[j]]+'</button>';
         for( let j=1; j<(passeCols.length-Runden['Schuss']); j++){
           tbody.rows[i].insertCell(j).innerText = Runden[passeCols[j]];
         }

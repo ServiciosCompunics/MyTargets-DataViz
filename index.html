@@ -14,14 +14,10 @@
         if( score < 3 || score > 8) return 'rgba(0,0,0,1.0)';
         return 'rgba(255,255,255,1.0)';
       };
-      function closeTrefferBild(){
-	console.log("closing..");
-	TrefferChart.destroy();
-	//TrefferWindow.close();
-	//TrefferWindow = undefined;
-	return;
-      };
       function showTrefferBild(x,y,r) {
+	if( typeof(TrefferChart) ==='object' && TrefferChart !== null){
+	  TrefferChart.destroy();
+	}
         var schuss = [];
         var scolor = [];
         for( let i=0; i < x.length; i++) {
