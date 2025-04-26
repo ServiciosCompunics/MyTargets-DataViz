@@ -199,7 +199,7 @@
     const thead = rundenTable.createTHead();
     thead.classList.add('ChartTableHead');
     thead.insertRow(0);
-    const rundenCols = [ 'Datum', 'Ort', 'Distanz', 'Punkte', 'Max', 'Prozent' ];
+    const rundenCols = [ '#', 'Datum', 'Ort', 'Distanz', 'Punkte', 'Max', 'Prozent' ];
     for( let i=0; i< rundenCols.length; i++){
       thead.rows[0].insertCell(i).innerText = rundenCols[i];
     };
@@ -214,21 +214,22 @@
         date: Runden['Datum'], tid: Runden['TID'], loc: Runden['Ort'], rid: Runden['RID'], dist: Runden['Distanz'], points: Runden['Punkte'], max: Runden['Max'], percent: Runden['Prozent'],
       });
       tbody.insertRow(i);
-      for( let j=0; j< rundenCols.length; j++){
+      tbody.rows[i].insertCell(0).innerText = i+1;
+      for( let j=1; j< rundenCols.length; j++){
         tbody.rows[i].insertCell(j).innerText = Runden[rundenCols[j]];
       };
       i++;
     }
     rundenInfo.appendChild(rundenTable);
 
+    const RChartTTtitle = (tooltipItems) => {
+      return tooltipItems[0].label + ' #' + (tooltipItems[0].dataIndex+1);
+    }
+
     const RChartTTlabel = (tooltipItems) => {
       return RDdata[tooltipItems.dataIndex].percent + '% (' + RDdata[tooltipItems.dataIndex].points + ' von ' + RDdata[tooltipItems.dataIndex].max + ') ' + RDdata[tooltipItems.dataIndex].dist + ' ' + RDdata[tooltipItems.dataIndex].loc;
     }
   
-    const RChartTTtitle = (tooltipItems) => {
-      return RDdata[tooltipItems[0].label];
-    }
-
     const RChartTTafterBody = (tooltipItems) => {
       let sumPoints = 0;
       let sumMax = 0;
