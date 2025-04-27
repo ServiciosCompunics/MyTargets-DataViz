@@ -286,13 +286,13 @@
         //},
         onClick: function(c,i) {
           var e = i[0];
-          showPasseInfo( RDdata[e.index].rid );
+          showPasseInfo( RDdata[e.index].rid, i[0].index+1 );
         }
       }
     });
   };
 
-  function showPasseInfo (properties) {
+  function showPasseInfo (rid, rnum) {
     passeInfo.innerHTML = '';
     var fLocation="";
     var selected = document.getElementById("selLocation").value;
@@ -308,7 +308,7 @@
         E.totalPoints AS Max, round(((E.reachedPoints*1.0)/(E.totalPoints*1.0)*100)) AS Prozent, E.shotCount AS Schuss, \
         S.scoringRing AS Ring, round(S.x,2) AS xPos, round(S.y,2) AS yPos \
       FROM Shot AS S, End AS E, Round AS R, Training AS T \
-      WHERE S.endId=E.id AND E.roundId = R.id AND R.trainingId = T.id AND R.id IN (" + properties + ")" + fDistance + fTarget + fLocation + "\
+      WHERE S.endId=E.id AND E.roundId = R.id AND R.trainingId = T.id AND R.id IN (" + rid + ")" + fDistance + fTarget + fLocation + "\
       GROUP BY S.id, E.id, R.id \
       ORDER BY date ASC");
 
@@ -317,7 +317,7 @@
     const thead = passeTable.createTHead();
     thead.classList.add('ChartTableHead');
     thead.insertRow(0);
-    const passeCols = [ 'Datum', 'Ort', 'Distanz', 'Punkte', 'Max', 'Prozent', 'Schuss', '1', '2', '3', '4', '5', '6' ];
+    const passeCols = [ '#'+rnum, 'Datum', 'Ort', 'Distanz', 'Punkte', 'Max', 'Prozent', 'Schuss', '1', '2', '3', '4', '5', '6' ];
     for( let i=0; i< passeCols.length; i++){
       thead.rows[0].insertCell(i).innerText = passeCols[i];
     };
@@ -346,12 +346,12 @@
         y.push(Runden['yPos']);
         tbody.insertRow(i);
         // insert round data
-        let j=0;
-        let n=0;
-        tbody.rows[i].insertCell(j).innerHTML = '<button onmouseover="showTrefferBild(['+x+'],['+y+'],['+r+'])">'+Runden[passeCols[j]]+'</button>';
-        //tbody.rows[i].insertCell(j).innerHTML = '<button onclick="showTrefferBild(['+x+'],['+y+'],['+r+'])">'+Runden[passeCols[j]]+'</button>';
-        for( let j=1; j<(passeCols.length-Runden['Schuss']); j++){
-          tbody.rows[i].insertCell(j).innerText = Runden[passeCols[j]];
+        let j=1;
+        tbody.rows[i].insertCell(0).innerText = i+1;
+	let rdate = Runden[passeCols[1]].replaceAll("-","_");
+        tbody.rows[i].insertCell(1).innerHTML = '<button onmouseover="showTrefferBild(['+x+'],['+y+'],['+r+'],['+i+'],['+rdate+'])">'+Runden[passeCols[j]]+'</button>';
+        for( let k=2; k<(passeCols.length-Runden['Schuss']); k++){
+          tbody.rows[i].insertCell(k).innerText = Runden[passeCols[k]];
         }
         // add shot results for this passe
         let l=(passeCols.length-Runden['Schuss']);
@@ -365,7 +365,7 @@
         c=0;
       }
     }
-    if( properties > 0){
+    if( rid > 0){
       passeInfo.appendChild(passeTable);
     }
   };

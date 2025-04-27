@@ -14,7 +14,8 @@
         if( score < 3 || score > 8) return 'rgba(0,0,0,1.0)';
         return 'rgba(255,255,255,1.0)';
       };
-      function showTrefferBild(x,y,r) {
+      function showTrefferBild(x,y,r,pnum,rdate) {
+	pnum++;
 	if( typeof(TrefferChart) ==='object' && TrefferChart !== null){
 	  TrefferChart.destroy();
 	}
@@ -70,10 +71,9 @@
           TrefferCanvas.style.border = "0px";
           TrefferCanvas.style.adding = "0px";
 	  TrefferWindow.document.body.appendChild(TrefferCanvas);
-	} else {
-	  TrefferChart.destroy();
 	}
         TrefferChart = new Chart( TrefferWindow.document.getElementById('TrefferCanvasId'), config );
+	TrefferWindow.document.title = "Datum: " + rdate + " Passe: " + pnum;
       };
     </script>
 
