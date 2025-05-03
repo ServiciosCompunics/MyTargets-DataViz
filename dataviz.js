@@ -125,16 +125,17 @@
     };
   
     // attach events to the navigation buttons
-    document.getElementById('zoomIn').onclick    = function () { timeline.zoomIn( 0.2); };
-    document.getElementById('zoomOut').onclick   = function () { timeline.zoomOut( 0.2); };
-    document.getElementById('zoomInMax').onclick = function () { timeline.zoomIn( 1.0 ); };
-    document.getElementById('zoomOutMax').onclick= function () { timeline.zoomOut( 1.0 ); };
-    document.getElementById('moveLeftX').onclick = function () { move( 0.2); };
-    document.getElementById('moveLeftXL').onclick = function () { move( 1.0); };
+    document.getElementById('zoomIn').onclick       = function () { timeline.zoomIn( 0.2); };
+    document.getElementById('zoomOut').onclick      = function () { timeline.zoomOut( 0.2); };
+    document.getElementById('zoomInMax').onclick    = function () { timeline.zoomIn( 1.0 ); };
+    document.getElementById('zoomOutMax').onclick   = function () { timeline.zoomOut( 1.0 ); };
+    document.getElementById('moveLeftX').onclick    = function () { move( 0.2); };
+    document.getElementById('moveLeftXL').onclick   = function () { move( 1.0); };
     document.getElementById('moveLeftMax').onclick  = function () { timeline.moveTo( TLRange['Start'] ); };
-    document.getElementById('moveRightX').onclick = function () { move(-0.2); };
-    document.getElementById('moveRightXL').onclick = function () { move(-1.0); };
+    document.getElementById('moveRightX').onclick   = function () { move(-0.2); };
+    document.getElementById('moveRightXL').onclick  = function () { move(-1.0); };
     document.getElementById('moveRightMax').onclick = function () { timeline.moveTo( TLRange['End'] ); };
+    document.getElementById('info').onclick         = function () { showInfo(); };
   
     // timeline event handlers
     timeline.on('select', function(properties) {
@@ -175,6 +176,10 @@
     showRundenInfo( {"items": [ visibleItems ]});
     //showPasseInfo( {"items": [ visibleItems ]});
   };
+
+  function showInfo () {
+      alert("Copyright: M.Bruening\nhttps://github.com/ServiciosCompunics/MyTargets-DataViz");
+  }
 
   function showRundenInfo (properties) {
     rundenInfo.innerHTML = '';
@@ -278,12 +283,13 @@
             max: 100,
           }
         },
-        //onHover: function(c,i) {
-          //var e = i[0];
+        onHover: function(c,i) {
+          var e = i[0];
+          showPasseInfo( RDdata[e.index].rid, i[0].index+1 );
           //var x_value = this.data.labels[e.index];
           //var y_value = this.data.datasets[e.datasetIndex].data[e.index];
           //console.log("x=" + x_value + " y=" + y_value);
-        //},
+        },
         onClick: function(c,i) {
           var e = i[0];
           showPasseInfo( RDdata[e.index].rid, i[0].index+1 );
