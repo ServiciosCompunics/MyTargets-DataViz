@@ -244,7 +244,7 @@
         sumMax += RDdata[i].max;
       }
       sumPercent = (sumPoints/sumMax)*100;
-      return 'Alle Runden: ' + sumPercent.toFixed(0) + "% (" + sumPoints + ' von ' + sumMax + ") " + selDistance + " " + selLocation;
+      return 'Alle ' + RDdata.length + ' Runden: ' + sumPercent.toFixed(0) + "% (" + sumPoints + ' von ' + sumMax + ") " + selDistance + " " + selLocation;
     }
 
     if( RundenChart ){ RundenChart.destroy(); }
