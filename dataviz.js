@@ -239,7 +239,7 @@
       return RDdata[tooltipItems.dataIndex].percent + '% (' + RDdata[tooltipItems.dataIndex].points + ' von ' + RDdata[tooltipItems.dataIndex].max + ') ' + RDdata[tooltipItems.dataIndex].dist + ' ' + RDdata[tooltipItems.dataIndex].loc;
     }
   
-    const RChartTTafterBody = (tooltipItems) => {
+    const RChartTTfooter = (tooltipItems) => {
       let sumPoints = 0;
       let sumMax = 0;
       let sumPercent = 0;
@@ -252,6 +252,7 @@
     }
 
     if( RundenChart ){ RundenChart.destroy(); }
+      Chart.defaults.plugins.tooltip.bodyFont = () => ({ size: 18, lineHeight: 1.2, weight: 800 });
       RundenChart = new Chart("rundenGraph", {
       type: "bar",
       data: {
@@ -271,7 +272,7 @@
             callbacks: {
               title: RChartTTtitle,
               label: RChartTTlabel,
-              afterBody: RChartTTafterBody,
+              footer: RChartTTfooter,
             },
           },
           title: {
