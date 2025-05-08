@@ -221,7 +221,11 @@
       tbody.insertRow(i);
       tbody.rows[i].insertCell(0).innerText = i+1;
       for( let j=1; j< rundenCols.length; j++){
-        tbody.rows[i].insertCell(j).innerText = Runden[rundenCols[j]];
+	if( j===1 ){
+        	tbody.rows[i].insertCell(j).innerHTML = '<button onmouseover="showPasseInfo(['+RDdata[i].rid+'],['+(i+1)+'])">'+Runden[rundenCols[j]]+'</button>';
+	} else {
+		tbody.rows[i].insertCell(j).innerText = Runden[rundenCols[j]];
+	}
       };
       i++;
     }
@@ -375,6 +379,7 @@
       passeInfo.appendChild(passeTable);
     }
   };
+  window.showPasseInfo = showPasseInfo;
 
   // now show the Timeline Overview
   let TL=showTimeline('init');
