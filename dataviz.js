@@ -142,6 +142,10 @@
       showRundenInfo( properties);
       showPasseInfo( 0 );
     });
+    timeline.on('itemover', function(properties) {
+      showRundenInfo( {"items": [ properties.item ]} );
+      showPasseInfo( 0 );
+    });
     timeline.on('rangechanged', function(properties) {
       var visibleItems = timeline.getVisibleItems();
       timeline.setSelection('');
