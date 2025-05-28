@@ -142,10 +142,10 @@
       showRundenInfo( properties);
       showPasseInfo( 0 );
     });
-    timeline.on('itemover', function(properties) {
-      showRundenInfo( {"items": [ properties.item ]} );
-      showPasseInfo( 0 );
-    });
+    //timeline.on('itemover', function(properties) {
+      //showRundenInfo( {"items": [ properties.item ]} );
+      //showPasseInfo( 0 );
+    //});
     timeline.on('rangechanged', function(properties) {
       var visibleItems = timeline.getVisibleItems();
       timeline.setSelection('');
@@ -224,6 +224,7 @@
       });
       tbody.insertRow(i);
       tbody.rows[i].insertCell(0).innerText = i+1;
+//console.log("mob:" + mobile);
       for( let j=1; j< rundenCols.length; j++){
 	if( j===1 ){
         	tbody.rows[i].insertCell(j).innerHTML = '<button onmouseover="showPasseInfo(['+RDdata[i].rid+'],['+(i+1)+'])">'+Runden[rundenCols[j]]+'</button>';
@@ -240,7 +241,7 @@
     }
 
     const RChartTTlabel = (tooltipItems) => {
-      return RDdata[tooltipItems.dataIndex].percent + '% (' + RDdata[tooltipItems.dataIndex].points + ' von ' + RDdata[tooltipItems.dataIndex].max + ') ' + RDdata[tooltipItems.dataIndex].dist + ' ' + RDdata[tooltipItems.dataIndex].loc;
+      return [RDdata[tooltipItems.dataIndex].percent + '% (' + RDdata[tooltipItems.dataIndex].points + ' von ' + RDdata[tooltipItems.dataIndex].max + ') ', RDdata[tooltipItems.dataIndex].dist + ' ' + RDdata[tooltipItems.dataIndex].loc];
     }
   
     const RChartTTfooter = (tooltipItems) => {
@@ -252,7 +253,7 @@
         sumMax += RDdata[i].max;
       }
       sumPercent = (sumPoints/sumMax)*100;
-      return 'Alle ' + RDdata.length + ' Runden: ' + sumPercent.toFixed(0) + "% (" + sumPoints + ' von ' + sumMax + ") " + selDistance + " " + selLocation;
+      return 'Alle ' + RDdata.length + ' Runden: ' + sumPercent.toFixed(0) + "% (" + sumPoints + ' von ' + sumMax + ") ";
     }
 
     if( RundenChart ){ RundenChart.destroy(); }
