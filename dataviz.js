@@ -14,13 +14,6 @@
   let TrainingChart;
   let RundenChart;
 
-  // Get dates of first and last Training - whole months
-  var stmt = db.prepare("\
-    SELECT min(date(date, 'start of month')) AS Start, max(date(date, 'start of month','+1 month')) AS End \
-    FROM Training");
-  stmt.getAsObject({});
-  var TLRange = stmt.getAsObject();
-
   // Get locations to be used as filter
   const selLocation = document.getElementById( "selLocation" );
   var stmt = db.prepare("SELECT DISTINCT location FROM Training");
@@ -74,6 +67,14 @@
     var fBow="";
     var selBow = document.getElementById("selBow").value;
     selBow == "" ? fBow="" : fBow=" AND bow='" + selBow + "'";
+
+    // Get dates of first and last Training - whole months
+    var stmt = db.prepare("\
+      SELECT min(date(date, 'start of month')) AS Start, max(date(date, 'start of month','+1 month')) AS End \
+      FROM Training AS T, Round AS R, Bow AS B \
+      WHERE T.id=T.id AND T.id=R.trainingId AND T.bowId=B.id" + fLocation + fDistance + fTarget + fBow + "");
+    stmt.getAsObject({});
+    var TLRange = stmt.getAsObject();
 
     // Get Training-info => Timeline overview
     var stmt = db.prepare("\
@@ -224,7 +225,6 @@
       });
       tbody.insertRow(i);
       tbody.rows[i].insertCell(0).innerText = i+1;
-//console.log("mob:" + mobile);
       for( let j=1; j< rundenCols.length; j++){
 	if( j===1 ){
         	tbody.rows[i].insertCell(j).innerHTML = '<button onmouseover="showPasseInfo(['+RDdata[i].rid+'],['+(i+1)+'])">'+Runden[rundenCols[j]]+'</button>';
@@ -295,10 +295,9 @@
         },
         onHover: function(c,i) {
           var e = i[0];
+          // CHECK!
           showPasseInfo( RDdata[e.index].rid, i[0].index+1 );
-          //var x_value = this.data.labels[e.index];
-          //var y_value = this.data.datasets[e.datasetIndex].data[e.index];
-          //console.log("x=" + x_value + " y=" + y_value);
+          //showPasseInfo( RDdata[e.index].rid, [i[0].index]+1 );
         },
         onClick: function(c,i) {
           var e = i[0];
