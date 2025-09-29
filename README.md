@@ -9,6 +9,8 @@ Needs "data.db" backup file in the webserver directory, remote or local (ex.: $ 
 - Show Round-Info and Round-Graph for visible or selected trainings
 - Filters: synchronize display after change (Location/Distance/Bow/)
 - Show Passe results and graphic
+- Compare 2 rounds: click on a bar to display the corresponding round info on the left side table
+  holding the Shift-Key while clicking on a bar displays the info table on the right side
 
 ## ToDos
 This is a hobbyist tool intended for personal use, there may or may not be further development
