@@ -142,17 +142,13 @@
     // timeline event handlers
     timeline.on('select', function(properties) {
       showRundenInfo( properties);
-      showPasseInfo( 0 );
+      showPasseInfoLeft( 0 );
     });
-    //timeline.on('itemover', function(properties) {
-      //showRundenInfo( {"items": [ properties.item ]} );
-      //showPasseInfo( 0 );
-    //});
     timeline.on('rangechanged', function(properties) {
       var visibleItems = timeline.getVisibleItems();
       timeline.setSelection('');
       showRundenInfo( {"items": [ visibleItems ]});
-      showPasseInfo( 0 );
+      showPasseInfoLeft( 0 );
     });
     return timeline;
   };
@@ -238,7 +234,6 @@
     rundenInfo.appendChild(rundenTable);
 
     const RChartTTtitle = (tooltipItems) => {
-//console.log("title: %o", tooltipItems);
       return tooltipItems[0].label + ' #' + (tooltipItems[0].dataIndex+1);
     }
 
@@ -295,12 +290,8 @@
             max: 100,
           }
         },
-        //onHover: function(c,i) {
-        //  var e = i[0];
-        //  // CHECK!
-        //  showPasseInfo( RDdata[e.index].rid, i[0].index+1 );
-        //},
         onClick: function(c,i) {
+//console.log("c: %o", c);
           var e = i[0];
           if( c.native.shiftKey ) {
             showPasseInfoRight( RDdata[e.index].rid, i[0].index+1 );
