@@ -149,9 +149,9 @@
       var visibleItems = timeline.getVisibleItems();
       timeline.setSelection('');
       showRundenInfo( {"items": [ visibleItems ]});
-      showPasseInfoLeft( 0 );
-      showPasseInfoMid( 0 );
-      showPasseInfoRight( 0 );
+      //showPasseInfoLeft( 0 );
+      //showPasseInfoMid( 0 );
+      //showPasseInfoRight( 0 );
     });
     return timeline;
   };
@@ -183,7 +183,7 @@
   };
 
   function showInfo () {
-      alert("Copyright: M.Bruening\nhttps://github.com/ServiciosCompunics/MyTargets-DataViz");
+      alert("Click on individual Runden-Bars to show Details (left)\nShift-Click: compare (middle)\nCtrl-Click:  compare (right)\nCopyright: M.Bruening\nhttps://github.com/ServiciosCompunics/MyTargets-DataViz");
   }
 
   function showRundenInfo (properties) {
@@ -253,7 +253,7 @@
         sumMax += RDdata[i].max;
       }
       sumPercent = (sumPoints/sumMax)*100;
-      return ['Alle ' + RDdata.length + ' Runden: ' + sumPercent.toFixed(0) + "% (" + sumPoints + ' von ' + sumMax + ") ", 'Click to show Runden-Details (left)', 'Shift-Click: compare (middle)', 'Ctrl-Click:  compare (right)'];
+      return ['Alle ' + RDdata.length + ' Runden: ' + sumPercent.toFixed(0) + "% (" + sumPoints + ' von ' + sumMax + ")"];
     }
 
     if( RundenChart ){ RundenChart.destroy(); }
