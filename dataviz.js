@@ -296,18 +296,18 @@
         onClick: function(c,i) {
           var e = i[0];
           if( c.native.shiftKey ) {
-            showPasseInfoMid( RDdata[e.index].rid, i[0].index+1);
+            showPasseInfoMid( RDdata[e.index].rid, i[0].index+1, RDdata[e.index].points, RDdata[e.index].max, RDdata[e.index].percent );
           } else if( c.native.ctrlKey  ) { 
-            showPasseInfoRight( RDdata[e.index].rid, i[0].index+1 );
+            showPasseInfoRight( RDdata[e.index].rid, i[0].index+1, RDdata[e.index].points, RDdata[e.index].max, RDdata[e.index].percent  );
           } else {
-            showPasseInfoLeft( RDdata[e.index].rid, i[0].index+1 );
+            showPasseInfoLeft( RDdata[e.index].rid, i[0].index+1, RDdata[e.index].points, RDdata[e.index].max, RDdata[e.index].percent )
           }
         }
       }
     });
   };
 
-  function showPasseInfoLeft (rid, rnum) {
+  function showPasseInfoLeft (rid, rnum, points, max, percent) {
     passeInfoLeft.innerHTML = '';
     var fLocation="";
     var selected = document.getElementById("selLocation").value;
@@ -380,13 +380,22 @@
         c=0;
       }
     }
+    tbody.insertRow(i);
+    let cnt=0;
+    tbody.rows[i].insertCell(cnt).innerText = "Totals";
+    for( cnt=1; cnt < 4; cnt++) {
+      tbody.rows[i].insertCell(cnt).innerText = "";
+    }
+    tbody.rows[i].insertCell(cnt++).innerText = points;
+    tbody.rows[i].insertCell(cnt++).innerText = max;
+    tbody.rows[i].insertCell(cnt++).innerText = percent + '%';
     if( rid > 0){
       passeInfoLeft.appendChild(passeTable);
     }
   };
   window.showPasseInfoLeft = showPasseInfoLeft;
 
-  function showPasseInfoMid (rid, rnum) {
+  function showPasseInfoMid (rid, rnum, points, max, percent) {
     passeInfoMid.innerHTML = '';
     var fLocation="";
     var selected = document.getElementById("selLocation").value;
@@ -459,13 +468,22 @@
         c=0;
       }
     }
+    tbody.insertRow(i);
+    let cnt=0;
+    tbody.rows[i].insertCell(cnt).innerText = "Totals";
+    for( cnt=1; cnt < 4; cnt++) {
+      tbody.rows[i].insertCell(cnt).innerText = "";
+    }
+    tbody.rows[i].insertCell(cnt++).innerText = points;
+    tbody.rows[i].insertCell(cnt++).innerText = max;
+    tbody.rows[i].insertCell(cnt++).innerText = percent + '%';
     if( rid > 0){
       passeInfoMid.appendChild(passeTable);
     }
   };
   window.showPasseInfoMid = showPasseInfoMid;
 
-  function showPasseInfoRight (rid, rnum) {
+  function showPasseInfoRight (rid, rnum, points, max, percent) {
     passeInfoRight.innerHTML = '';
     var fLocation="";
     var selected = document.getElementById("selLocation").value;
@@ -538,6 +556,15 @@
         c=0;
       }
     }
+    tbody.insertRow(i);
+    let cnt=0;
+    tbody.rows[i].insertCell(cnt).innerText = "Totals";
+    for( cnt=1; cnt < 4; cnt++) {
+      tbody.rows[i].insertCell(cnt).innerText = "";
+    }
+    tbody.rows[i].insertCell(cnt++).innerText = points;
+    tbody.rows[i].insertCell(cnt++).innerText = max;
+    tbody.rows[i].insertCell(cnt++).innerText = percent + '%';
     if( rid > 0){
       passeInfoRight.appendChild(passeTable);
     }
